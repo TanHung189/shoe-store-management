@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASP-shopgiay", "ASP-shopgiay\ASP-shopgiay.csproj", "{068F8396-1BF9-4A83-B87F-5745F2FEB52C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{068F8396-1BF9-4A83-B87F-5745F2FEB52C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{068F8396-1BF9-4A83-B87F-5745F2FEB52C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{068F8396-1BF9-4A83-B87F-5745F2FEB52C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{068F8396-1BF9-4A83-B87F-5745F2FEB52C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E3511241-5820-4FA4-B146-5D856B06E207}
+	EndGlobalSection
+EndGlobal

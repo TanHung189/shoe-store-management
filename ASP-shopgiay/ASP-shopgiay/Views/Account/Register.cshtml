@@ -1,0 +1,99 @@
+﻿@model ASP_shopgiay.ViewModels.RegisterViewModel
+@{
+    // Dùng Layout 2 cột đã tạo ở _AccountLayout.cshtml
+    Layout = "_AccountLayout";
+    ViewData["Title"] = "Đăng ký tài khoản";
+}
+
+<div class="row g-0">
+    @* Sử dụng g-0 để loại bỏ khoảng cách giữa các cột *@
+
+    @* CỘT 1 (BÊN TRÁI): FORM ĐĂNG KÝ (Trang Trắng) *@
+    <div class="col-md-7 left-panel">
+        <h1 class="mb-4">Đăng ký</h1>
+        <p class="text-muted mb-4">Hãy nhập thông tin để tạo tài khoản</p>
+
+        <form asp-action="Register" method="post" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <input asp-for="Ten" class="form-control" placeholder="Họ và tên" />
+                <span asp-validation-for="Ten" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <input asp-for="Email" class="form-control" placeholder="Email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <input asp-for="DienThoai" class="form-control" placeholder="Số điện thoại" />
+                <span asp-validation-for="DienThoai" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <div class="input-group">
+                    <input asp-for="MatKhau" class="form-control" placeholder="Mật khẩu" />
+                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                        <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="MatKhau" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <div class="input-group">
+                    <input asp-for="XacNhanMatKhau" class="form-control" placeholder="Xác nhận mật khẩu" />
+                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                        <i class="bi bi-eye" id="toggleConfirmPasswordIcon"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="XacNhanMatKhau" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2" style="background-color: #ff3c69; border: none;">ĐĂNG KÝ</button>
+        </form>
+    </div>
+
+    @* CỘT 2 (BÊN PHẢI): PANEL MÀU (Gợi ý Đăng nhập) *@
+    <div class="col-md-5 right-panel">
+        <h1>Chào mừng, Bạn!</h1>
+        <p class="mt-3 mb-4">Bạn đã có tài khoản?</p>
+        <a asp-action="Login" class="btn btn-outline-light rounded-pill px-4 py-2">ĐĂNG NHẬP</a>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // --- Code JavaScript cho "con mắt" (show/hide password) ---
+        // (Đây là code cũ của bạn đã được chuyển sang cấu trúc mới)
+        $(document).ready(function() {
+            $("#togglePassword").click(function() {
+                var passwordInput = $("#MatKhau");
+                var icon = $("#togglePasswordIcon");
+
+                if (passwordInput.attr("type") === "password") {
+                    passwordInput.attr("type", "text");
+                    icon.removeClass("bi-eye").addClass("bi-eye-slash");
+                } else {
+                    passwordInput.attr("type", "password");
+                    icon.removeClass("bi-eye-slash").addClass("bi-eye");
+                }
+            });
+
+            $("#toggleConfirmPassword").click(function() {
+                var confirmInput = $("#XacNhanMatKhau");
+                var icon = $("#toggleConfirmPasswordIcon");
+
+                if (confirmInput.attr("type") === "password") {
+                    confirmInput.attr("type", "text");
+                    icon.removeClass("bi-eye").addClass("bi-eye-slash");
+                } else {
+                    confirmInput.attr("type", "password");
+                    icon.removeClass("bi-eye-slash").addClass("bi-eye");
+                }
+            });
+        });
+    </script>
+}

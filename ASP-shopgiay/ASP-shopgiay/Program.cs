@@ -12,6 +12,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
   options.UseSqlServer(connectionString));
 // Add services to the container.
 
+// Đọc cấu hình Cloudinary từ appsettings.json
+builder.Services.Configure<ASP_shopgiay.Helpers.CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+
+// Đăng ký dịch vụ PhotoService
+builder.Services.AddScoped<ASP_shopgiay.Services.IPhotoService, ASP_shopgiay.Services.PhotoService>();
+
 // 3. ĐĂNG KÝ DỊCH VỤ XÁC THỰC (AUTHENTICATION)
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

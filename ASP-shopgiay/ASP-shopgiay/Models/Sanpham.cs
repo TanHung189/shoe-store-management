@@ -11,26 +11,35 @@ public partial class Sanpham
 {
     [Key]
     [Column("MaSP")]
+    [Display(Name = "Mã Sản Phẩm")]
+
     public int MaSp { get; set; }
 
     [Column("TenSP")]
+    [Display(Name = "Tên Sản Phẩm")]
     [StringLength(255)]
     public string TenSp { get; set; } = null!;
 
     [Column("MaDM")]
+    [Display(Name = "Mã doanh mục")]
     public int MaDm { get; set; }
 
     [Column("MaTH")]
+    [Display(Name = "Mã thương hiệu")]
     public int MaTh { get; set; }
 
+    [Display(Name = "Mô tả")]
     public string? MoTa { get; set; }
 
     [StringLength(255)]
     [Unicode(false)]
+    [Display(Name = "Hình ảnh")]
     public string? HinhAnh { get; set; }
 
+    [Display(Name = "Lượt xem")]
     public int? LuotXem { get; set; }
 
+    [Display(Name = "Lượt mua")]
     public int? LuotMua { get; set; }
 
     [InverseProperty("MaSpNavigation")]
@@ -41,9 +50,11 @@ public partial class Sanpham
 
     [ForeignKey("MaDm")]
     [InverseProperty("Sanphams")]
-    public virtual Danhmuc MaDmNavigation { get; set; } = null!;
+    [Display(Name = "Doanh mục")]
+    public virtual Danhmuc? MaDmNavigation { get; set; } = null!;
 
     [ForeignKey("MaTh")]
     [InverseProperty("Sanphams")]
-    public virtual Thuonghieu MaThNavigation { get; set; } = null!;
+    [Display(Name = "Thương hiệu")]
+    public virtual Thuonghieu? MaThNavigation { get; set; } = null!;
 }

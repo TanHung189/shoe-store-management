@@ -1,0 +1,72 @@
+﻿@model IEnumerable<ASP_shopgiay.Models.Sanpham>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Danh sách sản phẩm</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TenSp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MoTa)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HinhAnh)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LuotXem)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LuotMua)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaDmNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaThNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenSp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MoTa)
+            </td>
+            <td>
+                <img src="@item.HinhAnh" alt="Ảnh @item.TenSp" 
+                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;" />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LuotXem)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LuotMua)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaDmNavigation.Ten)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaThNavigation.TenTh)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.MaSp">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MaSp">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MaSp">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

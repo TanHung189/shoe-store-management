@@ -1,0 +1,75 @@
+﻿@model ASP_shopgiay.Models.Sanpham
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Thêm</h1>
+
+<h4>Sản phẩm</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="TenSp" class="control-label"></label>
+                <input asp-for="TenSp" class="form-control" />
+                <span asp-validation-for="TenSp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaDm" class="control-label"></label>
+                <select asp-for="MaDm" class ="form-control" asp-items="ViewBag.MaDm"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaTh" class="control-label"></label>
+                <select asp-for="MaTh" class ="form-control" asp-items="ViewBag.MaTh"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="MoTa" class="control-label"></label>
+                <input asp-for="MoTa" class="form-control" />
+                <span asp-validation-for="MoTa" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HinhAnh" class="control-label"></label>
+                <input type="file" id="hinhAnhFile" name="hinhAnhFile" class="form-control" accept="image/*" />
+                <img id="imagePreview" src="" alt="Xem trước ảnh" 
+                    style="width: 250px; margin-top: 15px; display: none;" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Lắng nghe sự kiện "change" của ô input file
+        document.getElementById("hinhAnhFile").addEventListener("change", function(event) {
+            var file = event.target.files[0];
+            var preview = document.getElementById("imagePreview");
+
+            if (file) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    // Cập nhật 'src' của thẻ <img> và cho nó hiển thị
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                };
+
+                // Đọc file dưới dạng Data URL
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}

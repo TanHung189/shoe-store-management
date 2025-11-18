@@ -299,6 +299,10 @@ INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Nike Air Force 1 \''07', 4, 1, N'Huyền thoại trong làng sneaker, Nike Air Force 1 ''07 mang đến sự thoải mái và phong cách cổ điển.', '/images/products/nike-af1-white.jpg', 15);
 
+UPDATE SANPHAM
+SET HinhAnh = 'nike-af1-white.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Nike Air Force 1 \''07'; -- Điều kiện tìm kiếm sản phẩm
+select * from SANPHAM
 -- BIENTHE_SANPHAM
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
@@ -311,6 +315,10 @@ INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Nike Air Max 270', 4, 1, N'Sneaker Air Max 270 với thiết kế êm ái, hiện đại.', '/images/products/nike-airmax270.jpg', 12);
 
+UPDATE SANPHAM
+SET HinhAnh = 'nike-airmax270.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Nike Air Max 270'; -- Điều kiện tìm kiếm sản phẩm
+select * from SANPHAM
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (2, 1, 3, 4490000, 40, '/images/products/nike-airmax270.jpg'),
@@ -323,6 +331,10 @@ VALUES
 INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Nike Dunk Low', 5, 1, N'Sneaker cổ điển, phối màu đa dạng.', '/images/products/nike-dunklow.jpg', 12);
+UPDATE SANPHAM
+SET HinhAnh = 'nike-dunklow.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Nike Dunk Low'; -- Điều kiện tìm kiếm sản phẩm
+select * from SANPHAM
 
 -- Biến thể Nike Dunk Low
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
@@ -340,6 +352,10 @@ INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Nike React Infinity Run', 5, 1, N'Giày chạy bộ, giảm chấn tốt.', '/images/products/nike-react-infinity.jpg', 18);
 
+UPDATE SANPHAM
+SET HinhAnh = 'nike-react-infinity.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Nike React Infinity Run'; -- Điều kiện tìm kiếm sản phẩm
+select * from SANPHAM
 -- Biến thể Nike React Infinity Run
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
@@ -358,6 +374,10 @@ INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Adidas Ultraboost 22', 4, 2, N'Hiệu năng tối đa, đế Boost siêu êm.', '/images/products/adidas-ultraboost22.jpg', 22);
 
+UPDATE SANPHAM
+SET HinhAnh = 'adidas-ultraboost22.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Adidas Ultraboost 22'; -- Điều kiện tìm kiếm sản phẩm
+select * from SANPHAM
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (5, 8, 3, 5100000, 10, '/images/products/adidas-ultraboost22.jpg'),
@@ -372,6 +392,10 @@ INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Adidas Stan Smith', 6, 2, N'Giày da cổ điển, biểu tượng của thời trang.', '/images/products/adidas-stansmith.jpg', 18);
 
+UPDATE SANPHAM
+SET HinhAnh = 'adidas-stansmith.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Adidas Stan Smith'; -- Điều kiện tìm kiếm sản phẩm
+select * from SANPHAM
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (6, 1, 1, 2400000, 15, '/images/products/adidas-stansmith.jpg'),
@@ -385,6 +409,9 @@ INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Adidas Superstar', 6, 2, N'Sneaker biểu tượng với mũi vỏ sò.', '/images/products/Adidas Superstar.jpg', 25);
 
+UPDATE SANPHAM
+SET HinhAnh = 'Adidas Superstar.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Adidas Superstar'; -- Điều kiện tìm kiếm sản phẩm
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (7, 1, 4, 2900000, 40, '/images/products/Adidas Superstar.jpg'),
@@ -396,12 +423,15 @@ INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Adidas NMD_R1', 5, 2, N'Sự kết hợp giữa công nghệ Boost và thiết kế hiện đại.', '/images/products/adidas-nmdr1.jpg', 19);
 
+UPDATE SANPHAM
+SET HinhAnh = 'adidas-nmdr1.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Adidas NMD_R1'; -- Điều kiện tìm kiếm sản phẩm
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
-(8, 1, 1, 3100000, 30, '/images/products/adidas-nmdr1.jpg'),
-(8, 1, 2, 3100000, 30, '/images/products/adidas-nmdr1.jpg'),
-(8, 1, 3, 3100000, 30, '/images/products/adidas-nmdr1.jpg'),
-(8, 1, 3, 3100000, 30, '/images/products/adidas-nmdr1.jpg');
+(8, 1, 1, 3100000, 30, '/images/products/adidas-nmdr1.jpg'), -- Size 38
+(8, 1, 2, 3100000, 30, '/images/products/adidas-nmdr1.jpg'), -- Size 38.5
+(8, 1, 3, 3100000, 30, '/images/products/adidas-nmdr1.jpg'); -- Size 39
+-- Dòng bị trùng đã được loại bỏ
 GO
 
 -- =====================================
@@ -412,7 +442,9 @@ GO
 INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Bitis Hunter Street', 4, 3, N'Sự lựa chọn hàng đầu cho giới trẻ năng động.', '/images/products/bitis-hunter-street.jpg', 30);
-
+UPDATE SANPHAM
+SET HinhAnh = 'bitis-hunter-street.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Bitis Hunter Street'; -- Điều kiện tìm kiếm sản phẩm
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (9, 1, 3, 950000, 40, '/images/products/bitis-hunter-street.jpg'),
@@ -426,7 +458,9 @@ VALUES
 INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Bitis Hunter X', 5, 3, N'Đế phylon êm ái, thiết kế năng động.', '/images/products/bitis-hunterx.jpg', 28);
-
+UPDATE SANPHAM
+SET HinhAnh = 'bitis-hunterx.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Bitis Hunter X'; -- Điều kiện tìm kiếm sản phẩm
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (10, 1, 1, 980000, 30, '/images/products/bitis-hunterx.jpg'),
@@ -442,7 +476,9 @@ VALUES
 INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Bitis Hunter Core', 4, 3, N'Sự cân bằng giữa bền bỉ và nhẹ nhàng.', '/images/products/bitis-hunter-core.jpg', 26);
-
+UPDATE SANPHAM
+SET HinhAnh = 'bitis-hunter-core.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Bitis Hunter Core'; -- Điều kiện tìm kiếm sản phẩm
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (11, 1, 1, 620000, 35, '/images/products/bitis-hunter-core.jpg'),
@@ -453,7 +489,9 @@ VALUES
 INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Bitis Hunter Marvel Edition', 4, 3, N'Phiên bản giới hạn hợp tác cùng Marvel.', '/images/products/bitis-marvel.jpg', 40);
-
+UPDATE SANPHAM
+SET HinhAnh = 'bitis-marvel.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Bitis Hunter Marvel Edition'; -- Điều kiện tìm kiếm sản phẩm
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (12, 1, 4, 1050000, 25, '/images/products/bitis-marvel-white.jpg'),
@@ -469,7 +507,9 @@ GO
 INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Puma Suede Classic', 6, 4, N'Sneaker biểu tượng từ năm 1968, phong cách cổ điển.', '/images/products/puma-suede-classic.jpg', 8);
-
+UPDATE SANPHAM
+SET HinhAnh = 'puma-suede-classic.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Puma Suede Classic'; -- Điều kiện tìm kiếm sản phẩm
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (13, 4, 1, 2400000, 25, '/images/products/puma-suede-classic.jpg'),
@@ -485,7 +525,9 @@ VALUES
 INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Puma RS-X', 5, 4, N'Thiết kế chunky đậm chất hiện đại, cực êm.', '/images/products/puma-rsx.jpg', 2);
-
+UPDATE SANPHAM
+SET HinhAnh = 'puma-rsx.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Puma RS-X'; -- Điều kiện tìm kiếm sản phẩm
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (14, 1, 5, 2600000, 30, '/images/products/puma-rsx-white-40.jpg'),
@@ -495,7 +537,9 @@ VALUES
 INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Puma Future Rider', 7, 4, N'Giày retro pha chút hiện đại, cực nhẹ.', '/images/products/puma-futurerider-red.jpg', 16);
-
+UPDATE SANPHAM
+SET HinhAnh = 'puma-futurerider-red.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Puma Future Rider'; -- Điều kiện tìm kiếm sản phẩm
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (15, 3, 4, 2550000, 25, '/images/products/puma-futurerider-red.jpg'),
@@ -509,7 +553,9 @@ VALUES
 INSERT INTO SANPHAM (TenSP, MaDM, MaTH, MoTa, HinhAnh, LuotMua)
 VALUES
 (N'Puma Cali Dream', 6, 4, N'Phong cách năng động, nữ tính, phù hợp mọi outfit.', '/images/products/puma-calidream-pink.jpg', 19);
-
+UPDATE SANPHAM
+SET HinhAnh = 'puma-calidream-pink.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Puma Cali Dream'; -- Điều kiện tìm kiếm sản phẩm
 INSERT INTO BIENTHE_SANPHAM (MaSP, MaMau, MaKichThuoc, GiaBan, SoLuong, HinhAnh)
 VALUES
 (16, 8, 1, 2450000, 15, '/images/products/puma-calidream-pink.jpg'),
@@ -529,9 +575,18 @@ VALUES
 (N'Tất thể thao Nike Everyday Cushioned', 8, 1, N'Tất cổ trung Nike co giãn, thoáng khí, thấm hút tốt khi vận động.', 
 '/images/products/vo1.jpg', 50),
 
+
+
 (N'Tất Adidas Performance Cushioned', 8, 2, N'Tất Adidas mềm mại, ôm chân, hỗ trợ thoải mái cho mọi hoạt động thể thao.', 
 '/images/products/tat adidas.jpg', 42);
+UPDATE SANPHAM
+SET HinhAnh = 'tat adidas.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Tất Adidas Performance Cushioned'; -- Điều kiện tìm kiếm sản phẩm
+UPDATE SANPHAM
+SET HinhAnh = 'vo1.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Tất thể thao Nike Everyday Cushioned'; -- Điều kiện tìm kiếm sản phẩm
 
+select * from SANPHAM
 -- ==============================
 -- 🪢 DANH MỤC: DÂY GIÀY (MaDM = 9)
 -- ==============================
@@ -540,9 +595,16 @@ VALUES
 (N'Dây giày Nike Flat Laces 120cm', 9, 1, N'Dây giày phẳng Nike dài 120cm, thích hợp cho giày thể thao và sneakers.', 
 '/images/products/daygiay nike.jpg', 35),
 
+
 (N'Dây giày Bitis Hunter StreetStyle', 9, 3, N'Dây giày Bitis StreetStyle bền chắc, dễ phối màu, phù hợp phong cách năng động.', 
 '/images/products/daygiay bettit.jpg', 20);
 GO
+UPDATE SANPHAM
+SET HinhAnh = 'daygiay nike.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Dây giày Nike Flat Laces 120cm'; -- Điều kiện tìm kiếm sản phẩm
+UPDATE SANPHAM
+SET HinhAnh = 'daygiay bettit.jpg' -- Thay đổi giá trị cột HinhAnh
+WHERE TenSP = N'Dây giày Bitis Hunter StreetStyle'; -- Điều kiện tìm kiếm sản phẩm
 
 
 -- ==============================
@@ -581,3 +643,40 @@ FROM SANPHAM SP
 JOIN DANHMUC DM ON SP.MaDM = DM.MaDM
 JOIN THUONGHIEU TH ON SP.MaTH = TH.MaTH
 ORDER BY DM.ParentID, DM.MaDM, SP.MaSP;
+
+-- =====================================
+-- CHÈN DỮ LIỆU MẪU CHO BẢNG DANHGIA
+-- =====================================
+
+-- Đánh giá cho Sản phẩm 1: Nike Air Force 1 '07 (MaSP=1)
+-- Khách hàng Hưng (MaTK=2) đánh giá 5 sao
+INSERT INTO DANHGIA (MaTK, MaSP, SoSao, BinhLuan, DaDuyet, NgayDanhGia) VALUES
+(2, 1, 5, N'Giày huyền thoại, đi rất êm và phong cách. Chuẩn size!', 1, GETDATE());
+
+select * from DANHGIA
+-- Thêm 2 đánh giá khác cho MaSP=1 từ các tài khoản giả định (MaTK=3, MaTK=4)
+-- (Giả định bạn có thêm tài khoản MaTK=3 và MaTK=4)
+INSERT INTO DANHGIA (MaTK, MaSP, SoSao, BinhLuan, DaDuyet, NgayDanhGia) VALUES
+(2, 2, 4, N'Giày đẹp, nhưng hộp hơi móp.', 1, DATEADD(day, -5, GETDATE())),
+(2, 2, 5, N'Quá hài lòng! Shipper giao nhanh.', 1, DATEADD(day, -2, GETDATE()));
+-- >>> Kết quả: MaSP=1 có rating trung bình là (5+4+5)/3 = 4.67 (Làm tròn thành 4.5 hoặc 5.0)
+
+-- Đánh giá cho Sản phẩm 9: Bitis Hunter Street (MaSP=9) - Rất nhiều đánh giá tốt
+INSERT INTO DANHGIA (MaTK, MaSP, SoSao, BinhLuan, DaDuyet, NgayDanhGia) VALUES
+(2, 9, 5, N'Giày quốc dân, giá tốt, chất lượng bền bỉ.', 1, GETDATE()),
+(5, 9, 5, N'Màu trắng rất dễ phối đồ. Đáng tiền!', 1, DATEADD(day, -10, GETDATE())),
+(6, 9, 4, N'Hơi nặng hơn mình nghĩ một chút, nhưng vẫn ổn.', 1, DATEADD(day, -8, GETDATE()));
+-- >>> Kết quả: MaSP=9 có rating trung bình là (5+5+4)/3 = 4.67 (Làm tròn thành 4.5 hoặc 5.0)
+
+-- Đánh giá cho Sản phẩm 14: Puma RS-X (MaSP=14) - Ít đánh giá, điểm thấp hơn
+INSERT INTO DANHGIA (MaTK, MaSP, SoSao, BinhLuan, DaDuyet, NgayDanhGia) VALUES
+(2, 14, 3, N'Form giày hơi ôm, đi lâu bị đau chân.', 1, GETDATE()),
+(7, 14, 4, N'Thiết kế đẹp, đế êm, nhưng giá hơi cao so với chất lượng.', 1, DATEADD(month, -1, GETDATE()));
+-- >>> Kết quả: MaSP=14 có rating trung bình là (3+4)/2 = 3.5
+
+-- Đánh giá đang chờ duyệt (DaDuyet = 0) cho MaSP=3: Nike Dunk Low
+INSERT INTO DANHGIA (MaTK, MaSP, SoSao, BinhLuan, DaDuyet, NgayDanhGia) VALUES
+(2, 3, 5, N'Đang chờ shop duyệt bình luận này.', 0, GETDATE());
+-- >>> Đánh giá này sẽ KHÔNG được tính vào điểm trung bình nếu logic tính toán của bạn (trong Model Sanpham) dùng điều kiện DaDuyet = true.
+
+GO

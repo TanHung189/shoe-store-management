@@ -3,44 +3,119 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ASP_shopgiay</title>
+    <title>@ViewData["Title"] - ShopGiay</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ASP_shopgiay.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ASP_shopgiay</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+
+
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+        <div class="container px-2">
+
+            <a class="navbar-brand d-flex flex-column align-items-start" asp-controller="Home" asp-action="Index">
+                <span style="color: #007bff; font-weight: bold; font-size: 2.0rem;">GiayStore</span>
+                <span style="color: #dc3545; font-style: italic; font-size: 0.8rem; align-self: flex-end;">
+                    Nâng niu từng bước chân
+                </span>
+            </a>
+
+            <form class="d-flex mx-auto" style="width: 500px; height: 40px;" method="get" asp-controller="SanPham" asp-action="Search">
+                <input class="form-control me-1" type="search" placeholder="Tìm kiếm theo tên, thương hiệu..." aria-label="Search" name="keyword">
+                <button class="btn btn-primary" type="submit" style="width: 200px; height: 40px">
+                    <i class="bi bi-search me-1"></i> Tìm kiếm
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+            </form>
+
+            <div class="d-flex" style="gap: 8px;">
+                <a asp-controller="Account" asp-action="Login" class="btn btn-light border d-flex align-items-center" style="height: 40px;">
+                    <i class="bi bi-person text-primary me-1"></i> Tài khoản
+                </a>
+                <a asp-controller="GioHang" asp-action="Index" class="btn btn-danger d-flex align-items-center position-relative" style="height: 40px;">
+                    <i class="bi bi-bag-fill me-1"></i> Giỏ hàng
+                    <span class="badge bg-white text-danger ms-2 rounded-pill" id="cart-count">0</span>
+                </a>
             </div>
-        </nav>
-    </header>
+
+        </div>
+    </nav>
+
+    <nav class="navbar navbar-expand-lg p-0" style="font-weight:600; background-color:#007bff;">
+        <div class="container d-flex justify-content-between align-items-center px-0">
+
+            <div class="dropdown px-4" style="background-color:#0056b3; position: relative;">
+                <i class="bi bi-list" style="font-size:1.5rem; color:white; display: inline-block;"></i>
+
+                <a class="nav-link text-white ms-2 fw-bold d-inline-block dropdown-toggle" href="#" id="danhMucDropdown"
+                   role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:white; text-decoration:none;">
+                    TẤT CẢ DANH MỤC
+                </a>
+
+                @* Gọi View Component để hiển thị menu phân cấp từ CSDL *@
+                @await Component.InvokeAsync("MegaMenu")
+            </div>
+
+            <ul class="navbar-nav d-flex flex-row" style="gap: 2rem;">
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-controller="SanPham" asp-action="Index" asp-route-isKm="true">
+                        <i class="bi bi-fire text-warning me-1"></i> KHUYẾN MÃI HOT
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-controller="Home" asp-action="LienHe">
+                        <i class="bi bi-telephone text-white me-1"></i> LIÊN HỆ
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - ASP_shopgiay - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer style="background-color:#f8f9fa; color:#212529;" class="pt-5 pb-3 border-top">
+        <div class="container px-2">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold text-primary">ShoeSphere - Về Chúng Tôi</h5>
+                    <p>Địa chỉ: 123 Đường Thời Trang, Quận Sneaker, TP Hồ Chí Minh</p>
+                    <p>Điện thoại: 090 123 4567</p>
+                    <p>Email: support@shoesphere.vn</p>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold text-primary">HỖ TRỢ KHÁCH HÀNG</h5>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Home" asp-action="ChinhSachDoiTra" class="text-black text-decoration-none">Chính sách Đổi/Trả</a></li>
+                        <li><a asp-controller="Home" asp-action="HuongDanMua" class="text-black text-decoration-none">Hướng dẫn mua hàng</a></li>
+                        <li><a asp-controller="Home" asp-action="CauHoiThuongGap" class="text-black text-decoration-none">Câu hỏi thường gặp</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold text-primary">KẾT NỐI VỚI CHÚNG TÔI</h5>
+                    <div class="d-flex" style="font-size: 1.8rem;">
+                        <a href="#" class="text-primary me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-danger me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-success"><i class="bi bi-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center py-3 border-top mt-3">
+                <small class="text-muted">© 2025 ShoeSphere. All Rights Reserved. Thiết kế bởi [Tên Bạn]</small>
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

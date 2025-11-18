@@ -1,8 +1,217 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<ASP_shopgiay.Models.Sanpham>
+
+@{
+	ViewData["Title"] = "Trang chủ ShoeSphere";
+	// Ép kiểu danh mục từ ViewBag sang List<Danhmuc> để sử dụng
+	var danhMuc = ViewBag.DanhMuc as List<ASP_shopgiay.Models.Danhmuc>;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="py-3">
+	<div class="container">
+		@* ... (Code Banner giữ nguyên) ... *@
+	</div>
+</section>
+
+<section class="py-2 bg-white shadow-sm mb-4">
+	<div class="container d-flex justify-content-between align-items-center">
+		@* ... (Code Danh mục ngang giữ nguyên) ... *@
+	</div>
+</section>
+
+<section class="py-5">
+	<div class="container px-4 px-lg-5 mt-3">
+		<div id="productList" class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+			@await Html.PartialAsync("_ProductListPartial", Model)
+		</div>
+
+		<div class="text-center mt-4" id="paginationButtons">
+			<button id="btnPrev" class="btn btn-outline-secondary me-3" style="display:none;">Trang trước</button>
+			<button id="btnHome" class="btn btn-outline-secondary me-3" style="display:none;">Về đầu</button>
+			<button id="btnLoadMore" class="btn btn-primary" style="display: @(ViewBag.HasMore ? "inline-block" : "none")">Xem thêm</button>
+		</div>
+
+	</div>
+</section>
+
+<div class="hasMoreFlag" data-hasmore="@ViewBag.HasMore" style="display:none;"></div>
+
+
+@section Scripts {
+	<script>
+		const pageSize = 8;
+		let pagesStack = [];
+
+		const btnPrev = document.getElementById("btnPrev");
+		const btnHome = document.getElementById("btnHome");
+		const btnLoadMore = document.getElementById("btnLoadMore");
+		const productList = document.getElementById("productList");
+
+		function getCards() {
+			return productList.querySelectorAll(".col.mb-5");
+		}
+
+		// Khởi tạo ban đầu (Cập nhật để lấy price và id)
+		window.addEventListener('load', () => {
+			const initialCards = getCards();
+			const initialCount = initialCards.length;
+			if (initialCount === 0) {
+				btnLoadMore.style.display = "none";
+				return;
+			}
+			const anchor = initialCards[0] ? initialCards[0].offsetTop : productList.offsetTop;
+			pagesStack = [];
+
+			// Lấy ID và Giá của sản phẩm cuối cùng trên trang 1
+			const lastCard = initialCards[initialCards.length - 1];
+			const lastIdValue = lastCard ? lastCard.dataset.id : null;
+			const lastPriceValue = lastCard ? lastCard.dataset.price : null;
+
+			pagesStack.push({ lastId: lastIdValue, lastPrice: lastPriceValue, count: initialCount, anchor: anchor });
+
+			const initialFlag = document.querySelector('.hasMoreFlag');
+			if (initialFlag && initialFlag.dataset.hasmore === 'False') {
+				btnLoadMore.style.display = "none";
+			}
+			if (pagesStack.length > 1) {
+				btnPrev.style.display = "inline-block";
+				btnHome.style.display = "inline-block";
+			} else {
+				btnPrev.style.display = "none";
+				btnHome.style.display = "none";
+			}
+		});
+
+		// ================= Load More (Đã sửa để gửi cả Giá và ID) =================
+		btnLoadMore.addEventListener("click", async () => {
+			btnLoadMore.disabled = true;
+			btnLoadMore.innerText = "Đang tải...";
+
+			const cardsBefore = getCards();
+			const beforeCount = cardsBefore.length;
+			const lastCardBefore = cardsBefore[cardsBefore.length - 1];
+
+			// Lấy thông tin Compound Key của sản phẩm cuối cùng (Cần cho Keyset)
+			const lastId = lastCardBefore ? lastCardBefore.dataset.id : null;
+			const lastPrice = lastCardBefore ? lastCardBefore.dataset.price : null;
+
+			// GỌI CONTROLLER VỚI CẢ lastPrice VÀ lastId
+			const res = await fetch(`/Home/LoadMore?lastPrice=${encodeURIComponent(lastPrice ?? "")}&lastId=${encodeURIComponent(lastId ?? "")}`);
+			const html = await res.text();
+
+			const tempDiv = document.createElement("div");
+			tempDiv.innerHTML = html;
+
+			const newCards = tempDiv.querySelectorAll(".col.mb-5");
+			const newCount = newCards.length;
+			const hasMoreFlag = tempDiv.querySelector(".hasMoreFlag");
+			const hasMore = hasMoreFlag ? hasMoreFlag.dataset.hasmore === "True" : false;
+
+			if (newCount > 0) {
+				const cardsHtml = Array.from(newCards).map(el => el.outerHTML).join("");
+				productList.insertAdjacentHTML("beforeend", cardsHtml);
+
+				const allCards = getCards();
+				const firstNewCard = allCards[beforeCount];
+				const anchor = firstNewCard ? firstNewCard.offsetTop : productList.offsetTop;
+
+				// Lấy thông tin Compound Key của sản phẩm cuối cùng trong BATCH MỚI
+				const lastNewCard = allCards[allCards.length - 1];
+				const actualLastId = lastNewCard ? lastNewCard.dataset.id : lastId;
+				const actualLastPrice = lastNewCard ? lastNewCard.dataset.price : lastPrice;
+
+
+				// Lưu thông tin trang mới vào stack
+				pagesStack.push({
+					lastId: actualLastId,
+					lastPrice: actualLastPrice,
+					count: newCount,
+					anchor: anchor
+				});
+			}
+
+			if (pagesStack.length > 1) {
+				btnPrev.style.display = "inline-block";
+				btnHome.style.display = "inline-block";
+			} else {
+				btnPrev.style.display = "none";
+				btnHome.style.display = "none";
+			}
+
+			btnLoadMore.style.display = hasMore ? "inline-block" : "none";
+			btnLoadMore.disabled = false;
+			btnLoadMore.innerText = "Xem thêm";
+		});
+
+		// ================= Trang trước và Home (Giữ nguyên logic Keyset Stack của bạn) =================
+		// ... (Phần logic btnPrev và btnHome giữ nguyên) ...
+
+		// ================= Trang trước =================
+		btnPrev.addEventListener("click", () => {
+			if (pagesStack.length <= 1) return;
+
+			productList.classList.add("fade-out");
+
+			setTimeout(() => {
+				const currentPage = pagesStack.pop();
+				const prevPage = pagesStack[pagesStack.length - 1];
+
+				for (let i = 0; i < currentPage.count; i++) {
+					const lastCard = productList.querySelector(".col.mb-5:last-child");
+					if (lastCard) lastCard.remove();
+				}
+
+				if (pagesStack.length === 1) {
+					btnPrev.style.display = "none";
+					btnHome.style.display = "none";
+				}
+
+				btnLoadMore.style.display = "inline-block";
+
+				productList.classList.remove("fade-out");
+				productList.classList.add("fade-in");
+				window.scrollTo({ top: prevPage.anchor - 80, behavior: "smooth" });
+			}, 300);
+		});
+
+		// ================= Home =================
+		btnHome.addEventListener("click", async () => {
+			productList.classList.add("fade-out");
+			setTimeout(async () => {
+				// Load trang đầu (không có lastId, lastPrice)
+				const res = await fetch(`/Home/LoadMore`);
+				const html = await res.text();
+
+				const tempDiv = document.createElement('div');
+				tempDiv.innerHTML = html;
+				productList.innerHTML = tempDiv.innerHTML;
+
+				// Xóa và thiết lập lại stack
+				pagesStack = [];
+				const initialCards = getCards();
+				const initialCount = initialCards.length;
+				const lastCard = initialCards[initialCards.length - 1];
+
+				const lastIdValue = lastCard ? lastCard.dataset.id : null;
+				const lastPriceValue = lastCard ? lastCard.dataset.price : null;
+				const anchor = initialCards[0] ? initialCards[0].offsetTop : productList.offsetTop;
+
+				pagesStack.push({ lastId: lastIdValue, lastPrice: lastPriceValue, count: initialCount, anchor: anchor });
+
+				// Cập nhật nút
+				const hasMoreFlag = productList.querySelector('.hasMoreFlag');
+				const hasMore = hasMoreFlag ? hasMoreFlag.dataset.hasmore === 'True' : false;
+
+				btnPrev.style.display = "none";
+				btnHome.style.display = "none";
+				btnLoadMore.style.display = hasMore ? "inline-block" : "none";
+				btnLoadMore.disabled = false;
+				btnLoadMore.innerText = "Xem thêm";
+
+				productList.classList.remove("fade-out");
+				productList.classList.add("fade-in");
+
+				window.scrollTo({ top: productList.offsetTop - 100, behavior: "smooth" });
+			}, 200);
+		});
+	</script>
+}

@@ -1,0 +1,41 @@
+﻿@model List<ASP_shopgiay.Models.DanhMucMenuVM>
+
+@* Dùng style để mở rộng khu vực MegaMenu *@
+<div class="dropdown-menu shadow-sm dropdown-mega-menu" aria-labelledby="danhMucDropdown"
+     style="width: 750px; left: 0;">
+    <div class="container-fluid">
+        <div class="row p-3">
+
+            @* Lặp qua từng Danh mục Cha (cấp 1) *@
+            @foreach (var parentDm in Model)
+            {
+                <div class="col-4 mb-3">
+                    @* Danh mục Cha - Dùng liên kết để lọc sản phẩm *@
+                    <a asp-controller="SanPham"
+                       asp-action="TheoDanhMuc"
+                       asp-route-id="@parentDm.MaDM"
+                       class="dropdown-header text-uppercase text-dark fw-bold border-bottom pb-1 mb-2 text-decoration-none">
+                        @parentDm.Ten
+                    </a>
+
+                    @* Danh sách Danh mục Con (cấp 2) *@
+                    <ul class="list-unstyled">
+                        @foreach (var childDm in parentDm.DanhMucCon)
+                        {
+                            <li>
+                                <a asp-controller="SanPham"
+                                   asp-action="TheoDanhMuc"
+                                   asp-route-id="@childDm.MaDM"
+                                   class="dropdown-item text-secondary py-1">
+                                    @childDm.Ten
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
+
+        </div>
+    </div>
+</div>

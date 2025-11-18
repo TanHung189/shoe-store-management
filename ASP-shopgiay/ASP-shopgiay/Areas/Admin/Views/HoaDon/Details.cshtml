@@ -1,0 +1,156 @@
+﻿@model ASP_shopgiay.Models.Hoadon
+
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-file-invoice me-2"></i>Chi Tiết Đơn Hàng #@Model.MaHd</h2>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Quay Lại
+    </a>
+</div>
+
+<div class="row">
+    <!-- Thông tin chính -->
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Thông Tin Đơn Hàng</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Mã Đơn:</strong> <span class="badge bg-secondary">#@Model.MaHd</span></p>
+                        <p><strong>Ngày Đặt:</strong> @Model.Ngay?.ToString("dd/MM/yyyy HH:mm")</p>
+                        <p><strong>Trạng Thái:</strong> <span class="badge bg-info">@Model.MaTrangThaiNavigation?.TenTrangThai</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Khách Hàng:</strong> @Model.MaTkNavigation?.Ten</p>
+                        <p><strong>Điện Thoại:</strong> @Model.MaTkNavigation?.DienThoai</p>
+                        <p><strong>Phương Thức TT:</strong> @Model.MaPtNavigation?.TenPt</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin giao hàng -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Thông Tin Giao Hàng</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Người Nhận:</strong> @Model.TenNguoiNhan</p>
+                <p><strong>Địa Chỉ:</strong> @Model.DiaChiGiaoHang</p>
+                <p><strong>Điện Thoại:</strong> @Model.DienThoaiGiaoHang</p>
+            </div>
+        </div>
+
+        <!-- Chi tiết sản phẩm -->
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0">Danh Sách Sản Phẩm</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Cthoadons.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Sản Phẩm</th>
+                                    <th class="text-center">Số Lượng</th>
+                                    <th class="text-right">Đơn Giá</th>
+                                    <th class="text-right">Thành Tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Cthoadons)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (item.MaBienTheNavigation?.MaSpNavigation != null)
+                                            {
+                                                <div>
+                                                    <strong>@item.MaBienTheNavigation.MaSpNavigation.TenSp</strong>
+                                                    @if (item.MaBienTheNavigation.MaMauNavigation != null)
+                                                    {
+                                                        <br />
+                                                        <small class="text-muted">Màu: @item.MaBienTheNavigation.MaMauNavigation.TenMau</small>
+                                                    }
+                                                    @if (item.MaBienTheNavigation.MaKichThuocNavigation != null)
+                                                    {
+                                                        <br />
+                                                        <small class="text-muted">Size: @item.MaBienTheNavigation.MaKichThuocNavigation.TenKichThuoc</small>
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                        <td class="text-center">@item.SoLuong</td>
+                                        <td class="text-right">@item.DonGia.ToString("N0") ₫</td>
+                                        <td class="text-right fw-bold">@(item.SoLuong* item.DonGia).ToString("N0") ₫</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">Chưa có sản phẩm nào trong đơn hàng</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Tóm tắt chi phí -->
+    <div class="col-md-4">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Tóm Tắt Tiền</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Tạm Tính:</span>
+                    <span>@Model.TamTinh?.ToString("N0") ₫</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Phí Vận Chuyển:</span>
+                    <span>@Model.PhiVanChuyen?.ToString("N0") ₫</span>
+                </div>
+                @if (Model.GiamGia.HasValue && Model.GiamGia.Value > 0)
+                {
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        <span>Giảm Giá:</span>
+                        <span>-@Model.GiamGia?.ToString("N0") ₫</span>
+                    </div>
+                }
+                <hr />
+                <div class="d-flex justify-content-between mb-3 fw-bold text-danger" style="font-size: 1.2rem;">
+                    <span>Tổng Cộng:</span>
+                    <span>@Model.TongTien?.ToString("N0") ₫</span>
+                </div>
+                @if (Model.MaGiamGiaNavigation != null)
+                {
+                    <p class="small text-muted">
+                        <strong>Mã Giảm Giá:</strong> @Model.MaGiamGiaNavigation.Code
+                    </p>
+                }
+            </div>
+        </div>
+
+        <!-- Nút Hành Động -->
+        <div class="mt-3">
+            <a asp-action="Edit" asp-route-id="@Model.MaHd" class="btn btn-warning w-100 mb-2">
+                <i class="fas fa-edit me-2"></i>Chỉnh Sửa
+            </a>
+            <a asp-action="Delete" asp-route-id="@Model.MaHd" class="btn btn-danger w-100">
+                <i class="fas fa-trash me-2"></i>Xóa Đơn Hàng
+            </a>
+        </div>
+    </div>
+</div>

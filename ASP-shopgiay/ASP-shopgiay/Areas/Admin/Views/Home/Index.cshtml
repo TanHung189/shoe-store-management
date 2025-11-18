@@ -1,17 +1,358 @@
 ﻿@{
     ViewData["Title"] = "Admin Dashboard";
-
-   
 }
 
-<div style="font-family: Arial, sans-serif; padding: 50px; text-align: center;">
-    <h1 style="font-size: 3rem; color: #0b5ed7;">
-        Chào mừng đến trang Quản Trị (Admin)
+<style>
+    .dashboard-header {
+        margin-bottom: 3rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #0d6efd;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: #0d6efd;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #212529;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #212529;
+        margin: 0;
+    }
+
+    .view-all-btn {
+        text-decoration: none;
+        color: #0d6efd;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+    }
+
+        .view-all-btn:hover {
+            color: #0b5ed7;
+            text-decoration: underline;
+        }
+
+    .products-list, .categories-list {
+        list-style: none;
+        padding: 0;
+    }
+
+        .products-list li, .categories-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .products-list li:last-child, .categories-list li:last-child {
+                border-bottom: none;
+            }
+
+    .product-name {
+        font-weight: 500;
+        color: #212529;
+        flex: 1;
+    }
+
+    .product-purchases {
+        background: #e7f3ff;
+        color: #0d6efd;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .alert-warning {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .alert-warning-text {
+        color: #856404;
+        margin: 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .quick-action-btn {
+        flex: 1;
+        min-width: 200px;
+        padding: 1rem;
+        background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        text-align: center;
+        transition: background 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+
+        .quick-action-btn:hover {
+            background: linear-gradient(135deg, #0b5ed7, #0a58ca);
+            color: white;
+            text-decoration: none;
+        }
+
+        .quick-action-btn i {
+            margin-right: 0.5rem;
+        }
+</style>
+
+<!-- Tiêu đề Dashboard -->
+<div class="dashboard-header">
+    <h1 style="margin: 0; color: #212529;">
+        <i class="fas fa-chart-line me-2"></i>Bảng Điều Khiển Quản Trị
     </h1>
-    <p style="font-size: 1.2rem;">
-        Bạn đã đăng nhập thành công với tư cách Quản trị viên.
+    <p style="color: #6c757d; margin-top: 0.5rem;">
+        Chào mừng quay trở lại. Đây là tóm tắt toàn bộ hoạt động của cửa hàng.
     </p>
-    <p>
-        Lỗi 404 đã được sửa. Bước tiếp theo sẽ là xây dựng Layout (Sidebar, Topbar) cho trang này.
-    </p>
+</div>
+
+<!-- Thống kê chính (Stats Cards) -->
+<div class="stats-grid">
+    <!-- Card: Tổng Sản Phẩm -->
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-shoe-prints"></i>
+        </div>
+        <div class="stat-label">Tổng Sản Phẩm</div>
+        <div class="stat-value">@ViewData["TotalProducts"]</div>
+    </div>
+
+    <!-- Card: Tổng Danh Mục -->
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-list"></i>
+        </div>
+        <div class="stat-label">Danh Mục</div>
+        <div class="stat-value">@ViewData["TotalCategories"]</div>
+    </div>
+
+    <!-- Card: Tổng Đơn Hàng -->
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-file-invoice"></i>
+        </div>
+        <div class="stat-label">Tổng Đơn Hàng</div>
+        <div class="stat-value">@ViewData["TotalOrders"]</div>
+    </div>
+
+    <!-- Card: Tổng Tài Khoản -->
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-label">Tài Khoản</div>
+        <div class="stat-value">@ViewData["TotalAccounts"]</div>
+    </div>
+
+    <!-- Card: Doanh Thu -->
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="stat-label">Doanh Thu</div>
+        <div class="stat-value">
+            @{
+                var revenue = (decimal?)ViewData["TotalRevenue"] ?? 0;
+                <span>@revenue.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</span>
+            }
+        </div>
+    </div>
+
+    <!-- Card: Đơn Hàng Chờ Xác Nhận -->
+    <div class="stat-card" style="border-left-color: #ffc107;">
+        <div class="stat-icon" style="color: #ffc107;">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="stat-label">Chờ Xác Nhận</div>
+        <div class="stat-value">@ViewData["PendingOrders"]</div>
+    </div>
+</div>
+
+<!-- Cảnh báo nếu có đơn hàng chờ xác nhận -->
+@if ((int)ViewData["PendingOrders"] > 0)
+{
+    <div class="alert-warning">
+        <p class="alert-warning-text">
+            <i class="fas fa-warning me-2"></i>
+            Bạn có <strong>@ViewData["PendingOrders"]</strong> đơn hàng đang chờ xác nhận.
+            <a asp-area="Admin" asp-controller="Hoadon" asp-action="Index" style="color: inherit; font-weight: bold;">
+                Xem ngay →
+            </a>
+        </p>
+    </div>
+}
+
+<!-- Nút hành động nhanh -->
+<div class="action-buttons" style="margin-bottom: 2rem;">
+    <a asp-area="Admin" asp-controller="SanPham" asp-action="Create" class="quick-action-btn">
+        <i class="fas fa-plus-circle"></i>Thêm Sản Phẩm Mới
+    </a>
+    <a asp-area="Admin" asp-controller="DanhMuc" asp-action="Create" class="quick-action-btn">
+        <i class="fas fa-plus-circle"></i>Thêm Danh Mục Mới
+    </a>
+    <a asp-area="Admin" asp-controller="Hoadon" asp-action="Index" class="quick-action-btn">
+        <i class="fas fa-list"></i>Xem Tất Cả Đơn Hàng
+    </a>
+</div>
+
+<!-- Phần 1: Sản Phẩm Bán Chạy Nhất -->
+<div class="section-card">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="fas fa-fire me-2" style="color: #ff6b6b;"></i>Top Sản Phẩm Bán Chạy
+        </h3>
+        <a asp-area="Admin" asp-controller="SanPham" asp-action="Index" class="view-all-btn">
+            Xem Tất Cả →
+        </a>
+    </div>
+    @{
+        var topProducts = (List<ASP_shopgiay.Models.Sanpham>?)ViewData["TopSellingProducts"] ?? new List<ASP_shopgiay.Models.Sanpham>();
+    }
+    @if (topProducts.Count > 0)
+    {
+        <ul class="products-list">
+            @foreach (var product in topProducts)
+            {
+                <li>
+                    <span class="product-name">
+                        <i class="fas fa-shoe-prints me-2" style="color: #0d6efd;"></i>
+                        @product.TenSp
+                    </span>
+                    <span class="product-purchases">
+                        @product.LuotMua <span>lần mua</span>
+                    </span>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p style="text-align: center; color: #6c757d;">Chưa có dữ liệu sản phẩm</p>
+    }
+</div>
+
+<!-- Phần 2: Danh Mục Sản Phẩm -->
+<div class="section-card">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="fas fa-layer-group me-2" style="color: #4ecdc4;"></i>Danh Mục Chính
+        </h3>
+        <a asp-area="Admin" asp-controller="DanhMuc" asp-action="Index" class="view-all-btn">
+            Quản Lý →
+        </a>
+    </div>
+    @{
+        var categories = (List<ASP_shopgiay.Models.Danhmuc>?)ViewData["Categories"] ?? new List<ASP_shopgiay.Models.Danhmuc>();
+    }
+    @if (categories.Count > 0)
+    {
+        <ul class="categories-list">
+            @foreach (var category in categories)
+            {
+                <li>
+                    <span class="product-name">
+                        <i class="fas fa-folder me-2" style="color: #4ecdc4;"></i>
+                        @category.Ten
+                    </span>
+                    <span class="product-purchases">
+                        @category.Sanphams.Count <span>sản phẩm</span>
+                    </span>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p style="text-align: center; color: #6c757d;">Chưa có danh mục nào</p>
+    }
+</div>
+
+<!-- Phần 3: Thông tin tổng quan -->
+<div class="section-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="section-header" style="border-bottom-color: rgba(255,255,255,0.2);">
+        <h3 class="section-title" style="color: white;">
+            <i class="fas fa-info-circle me-2"></i>Tổng Quan Nhanh
+        </h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <div>
+            <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">Tổng Số Giao Dịch</p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 1.5rem; font-weight: bold;">@ViewData["TotalOrders"]</p>
+        </div>
+        <div>
+            <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">Tổng Doanh Thu</p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 1.5rem; font-weight: bold;">
+                @{
+                    var totalRevenue = (decimal?)ViewData["TotalRevenue"] ?? 0;
+                    @totalRevenue.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
+                }
+            </p>
+        </div>
+        <div>
+            <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">Kho Hàng</p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 1.5rem; font-weight: bold;">@ViewData["TotalProducts"]</p>
+        </div>
+    </div>
 </div>

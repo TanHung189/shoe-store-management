@@ -1,0 +1,233 @@
+﻿@model ASP_shopgiay.Models.Hoadon
+
+@{
+    ViewData["Title"] = "Tạo Đơn Hàng Mới";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-file-invoice me-2"></i>Tạo Đơn Hàng Mới</h2>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Quay Lại
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <form asp-action="Create" method="post" id="createOrderForm" class="needs-validation" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <!-- Thông tin khách hàng -->
+                    <h5 class="mb-3">Thông Tin Khách Hàng</h5>
+                    <div class="mb-3">
+                        <label asp-for="MaTk" class="form-label"><strong>Chọn Khách Hàng</strong></label>
+                        <select asp-for="MaTk" class="form-select" asp-items="ViewBag.MaTk" required>
+                            <option value="">-- Chọn khách hàng --</option>
+                        </select>
+                        <span asp-validation-for="MaTk" class="text-danger"></span>
+                    </div>
+
+                    <!-- Thông tin giao hàng -->
+                    <h5 class="mb-3">Thông Tin Giao Hàng</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="TenNguoiNhan" class="form-label"><strong>Tên Người Nhận</strong></label>
+                            <input asp-for="TenNguoiNhan" class="form-control" required />
+                            <span asp-validation-for="TenNguoiNhan" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="DienThoaiGiaoHang" class="form-label"><strong>Điện Thoại</strong></label>
+                            <input asp-for="DienThoaiGiaoHang" class="form-control" required />
+                            <span asp-validation-for="DienThoaiGiaoHang" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="DiaChiGiaoHang" class="form-label"><strong>Địa Chỉ Giao Hàng</strong></label>
+                        <input asp-for="DiaChiGiaoHang" class="form-control" required />
+                        <span asp-validation-for="DiaChiGiaoHang" class="text-danger"></span>
+                    </div>
+
+                    <!-- Thanh toán & Trạng thái -->
+                    <h5 class="mb-3">Phương Thức & Trạng Thái</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="MaPt" class="form-label"><strong>Phương Thức Thanh Toán</strong></label>
+                            <select asp-for="MaPt" class="form-select" asp-items="ViewBag.MaPt" required>
+                                <option value="">-- Chọn phương thức --</option>
+                            </select>
+                            <span asp-validation-for="MaPt" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="MaTrangThai" class="form-label"><strong>Trạng Thái Đơn</strong></label>
+                            <select asp-for="MaTrangThai" class="form-select" asp-items="ViewBag.MaTrangThai" required>
+                                <option value="">-- Chọn trạng thái --</option>
+                            </select>
+                            <span asp-validation-for="MaTrangThai" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Chi phí -->
+                    <h5 class="mb-3">Chi Phí</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label asp-for="TamTinh" class="form-label"><strong>Tạm Tính</strong></label>
+                            <div class="input-group">
+                                <input asp-for="TamTinh" class="form-control" type="number" step="0.01" id="TamTinh" value="0" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="PhiVanChuyen" class="form-label"><strong>Phí Vận Chuyển</strong></label>
+                            <div class="input-group">
+                                <input asp-for="PhiVanChuyen" class="form-control" type="number" step="0.01" id="PhiVanChuyen" value="0" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="GiamGia" class="form-label"><strong>Giảm Giá</strong></label>
+                            <div class="input-group">
+                                <input asp-for="GiamGia" class="form-control" type="number" step="0.01" id="GiamGia" value="0" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MaGiamGia" class="form-label"><strong>Mã Giảm Giá (Tùy Chọn)</strong></label>
+                        <select asp-for="MaGiamGia" class="form-select" asp-items="ViewBag.MaGiamGia">
+                            <option value="">-- Không có --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TongTien" class="form-label"><strong>Tổng Tiền</strong></label>
+                        <div class="input-group">
+                            <input asp-for="TongTien" class="form-control" type="number" step="0.01" id="TongTien" value="0" readonly />
+                            <span class="input-group-text">₫</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Tạo Đơn Hàng
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Hủy
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quản lý Chi tiết Hóa Đơn (CHỈ HIỆN SAU KHI TẠO ĐƠN) -->
+    <div class="col-md-4" id="productPanel" style="display:none;">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Thêm Sản Phẩm</h5>
+            </div>
+            <div class="card-body">
+                <!-- Chọn sản phẩm từ combobox -->
+                <div class="mb-3">
+                    <label class="form-label"><strong>Chọn Sản Phẩm</strong></label>
+                    <select id="selectProduct" class="form-select">
+                        <option value="">-- Chọn sản phẩm --</option>
+                    </select>
+                </div>
+
+                <!-- Chi tiết sản phẩm được chọn -->
+                <div id="selectedProductInfo" class="alert alert-info mb-3" style="display:none;">
+                    <p class="mb-2"><strong>Sản Phẩm:</strong> <span id="selectedProductName"></span></p>
+                    <p class="mb-2"><strong>Giá:</strong> <span id="selectedProductPrice">0</span> ₫</p>
+                    <p class="mb-0"><strong>Tồn Kho:</strong> <span id="selectedProductStock">0</span></p>
+                </div>
+
+                <!-- Form thêm sản phẩm -->
+                <div id="addProductForm" style="display:none;">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Số Lượng</strong></label>
+                        <input type="number" id="orderQuantity" class="form-control" min="1" value="1" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Đơn Giá</strong></label>
+                        <div class="input-group">
+                            <input type="number" id="orderPrice" class="form-control" step="0.01" />
+                            <span class="input-group-text">₫</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Giảm Giá CT (Tùy Chọn)</strong></label>
+                        <div class="input-group">
+                            <input type="number" id="orderDiscount" class="form-control" step="0.01" value="0" />
+                            <span class="input-group-text">₫</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success w-100" id="btnAddProduct">
+                        <i class="fas fa-plus me-2"></i>Thêm Sản Phẩm
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách sản phẩm trong đơn hàng -->
+        <div class="card mt-3">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Danh Sách Sản Phẩm (<span id="productCount">0</span>)</h5>
+            </div>
+            <div class="card-body p-0">
+                <div id="orderDetailsList" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Danh sách chi tiết hóa đơn sẽ được tải vào đây -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let maHd = null;
+        let allVariants = [];
+        let selectedVariant = null;
+
+        $(document).ready(function () {
+            setupFormSubmit();
+            setupPriceCalculation();
+        });
+
+        // ============================================
+        // 1. SUBMIT FORM TẠNH ĐƠN HÀNG VÀ CHUYỂN TỚI EDIT
+        // ============================================
+        function setupFormSubmit() {
+            $('#createOrderForm').on('submit', function (e) {
+                // Để form submit bình thường
+                // Sau khi tạo xong, server sẽ redirect tới Edit với chi tiết sản phẩm
+            });
+        }
+
+        // ============================================
+        // 2. TÍNH TỔNG TIỀN TỰ ĐỘNG
+        // ============================================
+        function setupPriceCalculation() {
+            $('#PhiVanChuyen, #GiamGia').on('input', calculateTotalPrice);
+        }
+
+        function calculateTotalPrice() {
+            const tamTinh = parseFloat($('#TamTinh').val()) || 0;
+            const phiVanChuyen = parseFloat($('#PhiVanChuyen').val()) || 0;
+            const giamGia = parseFloat($('#GiamGia').val()) || 0;
+
+            const tongTien = tamTinh + phiVanChuyen - giamGia;
+            $('#TongTien').val(tongTien < 0 ? 0 : tongTien);
+        }
+    </script>
+
+    <!-- Toastr for notifications (optional) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+}

@@ -218,6 +218,20 @@ public partial class ApplicationDbContext : DbContext
                 .HasConstraintName("FK_SP_TH");
         });
 
+        // Khi xóa 1 Sanpham -> Tự động xóa tất cả BienTheSP liên quan
+        modelBuilder.Entity<BientheSanpham>()
+        .HasOne(b => b.MaSpNavigation)
+        .WithMany(s => s.BientheSanphams)
+        .HasForeignKey(b => b.MaSp)
+        .OnDelete(DeleteBehavior.Cascade);
+
+        // Khi xóa 1 Sanpham -> Tự động xóa tất cả Danhgia liên quan
+        modelBuilder.Entity<Danhgium>()
+            .HasOne(d => d.MaSpNavigation)
+            .WithMany(s => s.Danhgia)
+            .HasForeignKey(d => d.MaSp)
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Entity<Taikhoan>(entity =>
         {
             entity.HasKey(e => e.MaTk).HasName("PK__TAIKHOAN__2725007084A76901");

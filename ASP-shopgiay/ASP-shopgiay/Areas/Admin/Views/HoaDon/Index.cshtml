@@ -1,0 +1,68 @@
+﻿@model IEnumerable<ASP_shopgiay.Models.Hoadon>
+
+@{
+    ViewData["Title"] = "Quản lý Đơn Hàng";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-file-invoice me-2"></i>Quản lý Đơn Hàng</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Tạo Đơn Hàng
+    </a>
+</div>
+
+@if (Model.Count() == 0)
+{
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle me-2"></i>Hiện chưa có đơn hàng nào.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Mã Đơn</th>
+                    <th>Khách Hàng</th>
+                    <th>Ngày Đặt</th>
+                    <th>Trạng Thái</th>
+                    <th>Phương Thức TT</th>
+                    <th>Tổng Tiền</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>#@item.MaHd</strong></td>
+                        <td>@item.MaTkNavigation?.Ten ?? "N/A"</td>
+                        <td>@item.Ngay?.ToString("dd/MM/yyyy HH:mm") ?? "N/A"</td>
+                        <td>
+                            @if (item.MaTrangThaiNavigation != null)
+                            {
+                                <span class="badge bg-info">@item.MaTrangThaiNavigation.TenTrangThai</span>
+                            }
+                        </td>
+                        <td>@item.MaPtNavigation?.TenPt ?? "N/A"</td>
+                        <td class="fw-bold text-danger">@item.TongTien?.ToString("N0") ₫</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-action="Details" asp-route-id="@item.MaHd" class="btn btn-sm btn-info" title="Chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.MaHd" class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.MaHd" class="btn btn-sm btn-danger" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

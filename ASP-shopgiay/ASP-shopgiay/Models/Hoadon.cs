@@ -20,7 +20,7 @@ public partial class Hoadon
     public DateTime? Ngay { get; set; }
 
     [StringLength(255)]
-    public string DiaChiGiaoHang { get; set; } = null!;
+    public string? DiaChiGiaoHang { get; set; } = null!;
 
     [StringLength(20)]
     [Unicode(false)]
@@ -57,13 +57,13 @@ public partial class Hoadon
 
     [ForeignKey("MaPt")]
     [InverseProperty("Hoadons")]
-    public virtual Phuongthucthanhtoan MaPtNavigation { get; set; } = null!;
+    public virtual Phuongthucthanhtoan? MaPtNavigation { get; set; } = null!;
 
     [ForeignKey("MaTk")]
     [InverseProperty("Hoadons")]
-    public virtual Taikhoan MaTkNavigation { get; set; } = null!;
+    public virtual Taikhoan? MaTkNavigation { get; set; } = null!;
 
     [ForeignKey("MaTrangThai")]
     [InverseProperty("Hoadons")]
-    public virtual TrangthaiDonhang MaTrangThaiNavigation { get; set; } = null!;
+    public virtual TrangthaiDonhang? MaTrangThaiNavigation { get; set; } = null!;
 }

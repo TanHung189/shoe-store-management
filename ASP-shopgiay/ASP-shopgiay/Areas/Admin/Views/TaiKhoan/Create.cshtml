@@ -1,0 +1,79 @@
+﻿@model ASP_shopgiay.Models.Taikhoan
+
+@{
+    ViewData["Title"] = "Thêm mới tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid pt-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-success text-white">
+            <h5 class="m-0 font-weight-bold">
+                <i class="fas fa-user-plus"></i> Thêm tài khoản mới
+            </h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Ten" class="control-label fw-bold">Họ và Tên <span class="text-danger">*</span></label>
+                            <input asp-for="Ten" class="form-control" placeholder="Nhập họ tên nhân viên..." required />
+                            <span asp-validation-for="Ten" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="DienThoai" class="control-label fw-bold">Số điện thoại</label>
+                            <input asp-for="DienThoai" class="form-control" placeholder="0909xxxxxx" />
+                            <span asp-validation-for="DienThoai" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Email" class="control-label fw-bold">Email <span class="text-danger">*</span></label>
+                            <input asp-for="Email" class="form-control" type="email" placeholder="example@gmail.com" required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="MatKhau" class="control-label fw-bold">Mật khẩu <span class="text-danger">*</span></label>
+                            <input asp-for="MatKhau" type="password" class="form-control" placeholder="Nhập mật khẩu..." required />
+                            <span asp-validation-for="MatKhau" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="MaCv" class="control-label fw-bold">Chức vụ / Quyền hạn</label>
+                            <select asp-for="MaCv" class="form-control" asp-items="ViewBag.MaCv">
+                                <option value="">-- Chọn chức vụ --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group form-check mt-4">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="TrangThai" checked /> Kích hoạt tài khoản ngay
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <button type="submit" class="btn btn-success btn-lg px-4">
+                        <i class="fas fa-save"></i> Tạo tài khoản
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary btn-lg px-4">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

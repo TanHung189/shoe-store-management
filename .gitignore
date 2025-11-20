@@ -62,5 +62,6 @@ packages/
 publish/
 PublishProfiles/
 
-# Others you don't want to push
+# Bỏ qua file cấu hình cục bộ
 appsettings.*.json
+appsettings.Development.jsons

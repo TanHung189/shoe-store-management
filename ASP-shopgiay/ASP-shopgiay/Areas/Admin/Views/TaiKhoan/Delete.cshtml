@@ -1,0 +1,36 @@
+﻿@model ASP_shopgiay.Models.Taikhoan
+
+@{
+    ViewData["Title"] = "Xóa tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid pt-4">
+    <div class="card shadow border-0 border-left-danger">
+        <div class="card-header bg-danger text-white">
+            <h5 class="m-0 font-weight-bold">Xác nhận xóa tài khoản</h5>
+        </div>
+        <div class="card-body">
+            <h4 class="text-danger mb-4">Bạn có chắc chắn muốn xóa tài khoản này không?</h4>
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle"></i> Hành động này không thể hoàn tác!
+            </div>
+
+            <dl class="row">
+                <dt class="col-sm-2">Họ tên:</dt>
+                <dd class="col-sm-10">@Html.DisplayFor(model => model.Ten)</dd>
+
+                <dt class="col-sm-2">Email:</dt>
+                <dd class="col-sm-10">@Html.DisplayFor(model => model.Email)</dd>
+            </dl>
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="MaTk" />
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <i class="fas fa-trash"></i> Xóa ngay
+                </button>
+                <a asp-action="Index" class="btn btn-secondary btn-lg">Hủy bỏ</a>
+            </form>
+        </div>
+    </div>
+</div>

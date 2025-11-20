@@ -1,0 +1,77 @@
+﻿@model IEnumerable<ASP_shopgiay.Models.Taikhoan>
+@{
+    ViewData["Title"] = "Danh sách tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary">Quản lý tài khoản</h2>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fas fa-plus"></i> + Thêm tài khoản mới
+        </a>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Họ và Tên</th>
+                        <th>Số điện thoại</th>
+                        <th>Email</th>
+                        <th>Quyền hạn</th>
+                        <th>Trạng thái</th>
+                        <th style="width: 200px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">@Html.DisplayFor(modelItem => item.Ten)</td>
+                            <td>@Html.DisplayFor(modelItem => item.DienThoai)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Email)</td>
+
+                            <td class="text-center">
+                                @if (item.MaCvNavigation != null)
+                                {
+                                    // Thay 'TenChucVu' bằng tên thuộc tính hiển thị tên quyền trong bảng ChucVu của bạn
+                                    // Nếu không nhớ tên, tạm thời để item.MaCv
+                                    <span class="badge bg-info text-dark">@item.MaCvNavigation.MaCv</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Khách hàng</span>
+                                }
+                            </td>
+
+                            <td class="text-center">
+                                @if (item.TrangThai == true)
+                                {
+                                    <span class="badge bg-success">Hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Đã khóa</span>
+                                }
+                            </td>
+
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@item.MaTk" class="btn btn-warning btn-sm" title="Sửa">
+                                    Sửa
+                                </a>
+                                <a asp-action="Details" asp-route-id="@item.MaTk" class="btn btn-info btn-sm text-white" title="Chi tiết">
+                                    Xem
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.MaTk" class="btn btn-danger btn-sm" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?');">
+                                    Xóa
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

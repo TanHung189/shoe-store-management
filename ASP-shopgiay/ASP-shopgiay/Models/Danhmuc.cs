@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ASP_shopgiay.Models;
 
 [Table("DANHMUC")]
+[Index("Ten", "ParentId", Name = "UQ_DANHMUC_Ten_Parent", IsUnique = true)]
 public partial class Danhmuc
 {
     [Key]

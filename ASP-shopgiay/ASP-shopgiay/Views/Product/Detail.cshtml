@@ -1,0 +1,348 @@
+﻿@model ASP_shopgiay.ViewModels.ProductDetailViewModel
+
+@{
+    ViewData["Title"] = Model.Product.TenSp;
+    Layout = "_Layout";
+}
+
+<!-- Dữ liệu JSON cho JavaScript -->
+<script id="variant-data" type="application/json">
+    @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AllVariants))
+</script>
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Breadcrumb -->
+    <nav class="text-sm mb-4">
+        <ol class="list-none p-0 inline-flex text-gray-500">
+            <li class="flex items-center"><a href="/" class="hover:text-indigo-600">Trang Chủ</a><span class="mx-2">/</span></li>
+            <li class="flex items-center"><a href="@Url.Action("List", "Product")" class="hover:text-indigo-600">Sản phẩm</a><span class="mx-2">/</span></li>
+            <li class="text-gray-900 font-semibold truncate max-w-xs">@Model.Product.TenSp</li>
+        </ol>
+    </nav>
+
+    <div class="bg-white p-6 rounded-xl shadow-lg">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+            <!-- CỘT TRÁI: HÌNH ẢNH -->
+            <div class="sticky top-20">
+                @{
+                    // Xử lý đường dẫn ảnh ban đầu (C#)
+                    string initialImgUrl = "";
+                    if (!string.IsNullOrEmpty(Model.Product.HinhAnh))
+                    {
+                        if (Model.Product.HinhAnh.StartsWith("http") || Model.Product.HinhAnh.StartsWith("/"))
+                        {
+                            initialImgUrl = Model.Product.HinhAnh;
+                        }
+                        else
+                        {
+                            initialImgUrl = $"/images/products/{Model.Product.HinhAnh}";
+                        }
+                    }
+                }
+
+                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden relative group">
+                    <img id="main-image"
+                         src="@initialImgUrl"
+                         alt="@Model.Product.TenSp"
+                         class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                         onerror="this.onerror=null; this.src='https://placehold.co/600x600/png?text=No+Image';">
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI: THÔNG TIN -->
+            <div>
+                <span class="text-sm font-bold text-indigo-600 uppercase tracking-wide">@Model.BrandName</span>
+                <h1 class="text-3xl lg:text-4xl font-extrabold text-gray-900 mt-2 mb-2">@Model.Product.TenSp</h1>
+
+                <!-- Rating -->
+                <div class="flex items-center mb-6">
+                    <div class="flex text-yellow-400 text-sm">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= Model.AverageRating)
+                            {
+                                <i class="fas fa-star"></i>
+                            }
+                            else if (i - 0.5 == Model.AverageRating)
+                            {
+
+                                <i class="fas fa-star-half-alt"></i>
+                            }
+                            else
+                            {
+
+                                <i class="far fa-star text-gray-300"></i>
+                            }
+                        }
+                    </div>
+                    <span class="ml-2 text-gray-500 text-sm">(@Model.ReviewCount đánh giá)</span>
+                </div>
+
+                <!-- Giá bán -->
+                <div class="mb-8">
+                    <span class="text-3xl font-black text-red-600" id="display-price">
+                        Liên hệ
+                    </span>
+                </div>
+
+                <!-- FORM MUA HÀNG -->
+                <form action="@Url.Action("AddToCart", "Cart")" method="post">
+                    <input type="hidden" name="variantId" id="selected-variant-id" value="0" />
+
+                    <!-- Chọn Màu -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Màu Sắc:</label>
+                        <div class="flex flex-wrap gap-3" id="color-options">
+                            @foreach (var color in Model.AvailableColors)
+                            {
+                                <button type="button"
+                                        data-color-id="@color.MaMau"
+                                        class="color-option w-10 h-10 rounded-full border-2 border-gray-200 focus:outline-none transition-all hover:scale-110 relative"
+                                        style="background-color: @color.MaHex;"
+                                        title="@color.TenMau">
+                                    <!-- Icon check sẽ hiện khi active -->
+                                    <i class="fas fa-check text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 text-xs pointer-events-none"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Chọn Size -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-bold text-gray-700">Kích Thước:</label>
+                            <a href="#" class="text-xs text-indigo-600 hover:underline">Hướng dẫn chọn size?</a>
+                        </div>
+                        <div class="grid grid-cols-4 sm:grid-cols-6 gap-3" id="size-options">
+                            @foreach (var size in Model.AvailableSizes)
+                            {
+                                <button type="button"
+                                        data-size-id="@size.MaKichThuoc"
+                                        class="size-option py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:border-indigo-600 hover:text-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:text-gray-700">
+                                    @size.TenKichThuoc
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Số lượng & Nút mua -->
+                    <div class="flex items-end gap-4 mb-6">
+                        <div class="w-24">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Số lượng</label>
+                            <input type="number" name="quantity" id="quantity" value="1" min="1"
+                                   class="w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-center py-2" />
+                        </div>
+                        <div class="flex-1">
+                            <button type="submit" id="add-to-cart-btn" disabled
+                                    class="w-full bg-gray-300 text-white font-bold py-3 px-6 rounded-lg shadow-sm transition-all duration-200 disabled:cursor-not-allowed">
+                                Vui lòng chọn phân loại
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Thông báo tồn kho / lỗi -->
+                    <div class="text-sm">
+                        <p id="stock-info" class="text-gray-500 hidden">
+                            Tồn kho: <span id="stock-quantity" class="font-bold text-gray-900">0</span> sản phẩm
+                        </p>
+                        <p id="global-message" class="text-red-500 font-medium mt-2 hidden"></p>
+                    </div>
+                </form>
+
+                <!-- Mô tả & Chính sách -->
+                <div class="mt-8 pt-8 border-t border-gray-100 space-y-4">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-truck text-indigo-600 mt-1"></i>
+                        <p class="text-sm text-gray-600">Miễn phí vận chuyển cho đơn hàng trên 1.000.000₫</p>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-undo text-indigo-600 mt-1"></i>
+                        <p class="text-sm text-gray-600">Đổi trả miễn phí trong vòng 30 ngày</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MÔ TẢ SẢN PHẨM -->
+        <div class="mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b">Chi Tiết Sản Phẩm</h2>
+            <div class="prose max-w-none text-gray-700">
+                @Html.Raw(Model.Product.MoTa ?? "Đang cập nhật mô tả...")
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 1. Lấy dữ liệu biến thể từ Server
+        const ALL_VARIANTS = JSON.parse(document.getElementById('variant-data').textContent);
+
+        // 2. Các phần tử DOM
+        const mainImage = document.getElementById('main-image');
+        const displayPrice = document.getElementById('display-price');
+        const stockInfo = document.getElementById('stock-info');
+        const stockQuantity = document.getElementById('stock-quantity');
+        const quantityInput = document.getElementById('quantity');
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        const hiddenVariantInput = document.getElementById('selected-variant-id');
+        const globalMessage = document.getElementById('global-message');
+
+        // 3. Biến trạng thái
+        let selectedColor = null;
+        let selectedSize = null;
+
+        // QUAN TRỌNG: Lưu lại đường dẫn ảnh gốc ban đầu để rollback khi cần
+        const defaultImageSrc = mainImage.src;
+
+        // 4. Định dạng tiền tệ VNĐ
+        const formatter = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        });
+
+        // --- XỬ LÝ SỰ KIỆN CHỌN MÀU ---
+        document.querySelectorAll('.color-option').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Reset UI màu cũ
+                document.querySelectorAll('.color-option').forEach(b => {
+                    b.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-500');
+                    b.querySelector('i').classList.add('opacity-0');
+                });
+
+                // Active màu mới
+                this.classList.add('ring-2', 'ring-offset-2', 'ring-indigo-500');
+                this.querySelector('i').classList.remove('opacity-0');
+
+                selectedColor = parseInt(this.dataset.colorId);
+
+                // Reset size khi đổi màu (để người dùng chọn lại size phù hợp với màu mới)
+                resetSizeSelection();
+
+                // Cập nhật các size khả dụng cho màu này
+                updateSizeAvailability();
+
+                // Cập nhật thông tin tổng quan
+                updateProductInfo();
+            });
+        });
+
+        // --- XỬ LÝ SỰ KIỆN CHỌN SIZE ---
+        document.querySelectorAll('.size-option').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if(this.disabled) return;
+
+                // Reset UI size cũ
+                document.querySelectorAll('.size-option').forEach(b => {
+                    b.classList.remove('border-indigo-600', 'text-indigo-600', 'bg-indigo-50', 'ring-1', 'ring-indigo-600');
+                });
+
+                // Active size mới
+                this.classList.add('border-indigo-600', 'text-indigo-600', 'bg-indigo-50', 'ring-1', 'ring-indigo-600');
+
+                selectedSize = parseInt(this.dataset.sizeId);
+
+                // Cập nhật thông tin tổng quan
+                updateProductInfo();
+            });
+        });
+
+        function resetSizeSelection() {
+            selectedSize = null;
+            document.querySelectorAll('.size-option').forEach(b => {
+                b.classList.remove('border-indigo-600', 'text-indigo-600', 'bg-indigo-50', 'ring-1', 'ring-indigo-600');
+            });
+        }
+
+        function updateSizeAvailability() {
+            // Tìm tất cả các size có hàng cho màu đã chọn
+            const availableSizesForColor = ALL_VARIANTS
+                .filter(v => v.MaMau === selectedColor && v.SoLuongTon > 0)
+                .map(v => v.MaKichThuoc);
+
+            document.querySelectorAll('.size-option').forEach(btn => {
+                const sizeId = parseInt(btn.dataset.sizeId);
+                if (availableSizesForColor.includes(sizeId)) {
+                    btn.disabled = false;
+                } else {
+                    btn.disabled = true;
+                }
+            });
+        }
+
+        function updateProductInfo() {
+            // Reset thông báo
+            globalMessage.textContent = '';
+            globalMessage.classList.add('hidden');
+
+            // Tìm biến thể khớp
+            let variant = null;
+            if (selectedColor && selectedSize) {
+                variant = ALL_VARIANTS.find(v => v.MaMau === selectedColor && v.MaKichThuoc === selectedSize);
+            }
+
+            if (variant) {
+                // --- CÓ BIẾN THỂ ---
+
+                // 1. Cập nhật Giá & Tồn kho
+                displayPrice.textContent = formatter.format(variant.GiaBan);
+                stockQuantity.textContent = variant.SoLuongTon;
+                stockInfo.classList.remove('hidden');
+
+                // 2. Cập nhật input ẩn & giới hạn số lượng
+                hiddenVariantInput.value = variant.MaBienThe;
+                quantityInput.max = variant.SoLuongTon;
+                quantityInput.value = 1;
+
+                // 3. Cập nhật nút Mua hàng
+                if(variant.SoLuongTon > 0) {
+                    addToCartBtn.disabled = false;
+                    addToCartBtn.textContent = "THÊM VÀO GIỎ HÀNG";
+                    addToCartBtn.classList.remove('bg-gray-300', 'text-gray-500');
+                    addToCartBtn.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700');
+                } else {
+                    addToCartBtn.disabled = true;
+                    addToCartBtn.textContent = "HẾT HÀNG TẠM THỜI";
+                    addToCartBtn.classList.add('bg-gray-300', 'text-gray-500');
+                    addToCartBtn.classList.remove('bg-indigo-600', 'text-white', 'hover:bg-indigo-700');
+                }
+
+                // 4. XỬ LÝ ẢNH (Fix lỗi mất ảnh)
+                if (variant.HinhAnh && variant.HinhAnh.trim() !== "") {
+                    // Nếu biến thể có ảnh riêng -> Hiển thị
+                    let imgUrl = variant.HinhAnh;
+                    // Kiểm tra nếu chỉ là tên file (không có /images/...)
+                    if (!imgUrl.startsWith('/') && !imgUrl.startsWith('http')) {
+                        imgUrl = '/images/products/' + imgUrl;
+                    }
+                    mainImage.src = imgUrl;
+                } else {
+                    // Nếu biến thể không có ảnh riêng -> Dùng ảnh gốc
+                    mainImage.src = defaultImageSrc;
+                }
+
+            } else {
+                // --- CHƯA CHỌN ĐỦ HOẶC KHÔNG TÌM THẤY ---
+
+                // Reset về mặc định
+                hiddenVariantInput.value = 0;
+                addToCartBtn.disabled = true;
+                addToCartBtn.textContent = "Vui lòng chọn Màu & Size";
+                addToCartBtn.classList.add('bg-gray-300');
+                addToCartBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+
+                // Quay về ảnh gốc (Quan trọng!)
+                mainImage.src = defaultImageSrc;
+
+                if(selectedColor && !selectedSize) {
+                     globalMessage.textContent = "Vui lòng chọn Kích thước.";
+                     globalMessage.classList.remove('hidden');
+                }
+            }
+        }
+
+        // Khởi chạy lần đầu: Tìm biến thể đầu tiên có hàng để auto-select (tuỳ chọn)
+        // document.addEventListener('DOMContentLoaded', () => { ...logic auto select... });
+    </script>
+}

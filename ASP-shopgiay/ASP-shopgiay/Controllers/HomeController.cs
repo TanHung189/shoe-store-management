@@ -1,148 +1,102 @@
 ﻿using System.Diagnostics;
-using ASP_shopgiay.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ASP_shopgiay.Data;
+using ASP_shopgiay.Models;
+using ASP_shopgiay.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ASP_shopgiay.Controllers
 {
+    // ViewModel cho Trang Chủ
+    public class HomeViewModel
+    {
+        public List<Danhmuc> DanhMucCha { get; set; } = new List<Danhmuc>();
+        public List<ProductCardViewModel> SanPhamNoiBat { get; set; } = new List<ProductCardViewModel>();
+        public List<ProductCardViewModel> SanPhamMoi { get; set; } = new List<ProductCardViewModel>();
+    }
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _context;
-        private const int PageSize = 8;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        private readonly ApplicationDbContext _context;
+
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
             _context = context;
         }
 
-        // Phương thức trợ giúp: Lấy MaSP và Giá bán MIN (truy vấn SQL)
-        private IQueryable<ProductPrice> GetProductPriceIdQuery()
-        {
-            return _context.Sanphams
-                        .Select(sp => new ProductPrice
-                        {
-                            MaSp = sp.MaSp,
-                            MinPrice = sp.BientheSanphams.Min(bt => (decimal?)bt.GiaBan) ?? 0
-                        })
-                        // Sắp xếp chính: Giá giảm dần, Sắp xếp phụ: MaSp giảm dần
-                        .OrderByDescending(p => p.MinPrice)
-                        .ThenByDescending(p => p.MaSp)
-                        .AsQueryable();
-        }
-
-        // ===============================================
-        // INDEX - Load trang chủ (SẮP XẾP GIÁ CAO -> THẤP)
-        // ===============================================
+        // Action xử lý Trang Chủ (Index)
         public async Task<IActionResult> Index()
         {
-            // 1. Lấy danh sách MaSP (ID) duy nhất cần thiết cho trang đầu tiên (Đã sắp xếp theo Giá)
-            var requiredMaSps = await GetProductPriceIdQuery()
-                                        .Select(p => p.MaSp)
-                                        .Take(PageSize)
-                                        .ToListAsync();
+            // 1. Lấy danh mục cha (ParentID = NULL) cho Menu
+            // Sử dụng DbSet Danhmuc và thuộc tính ParentId (PascalCase)
+            var danhMucCha = await _context.Danhmucs
+                .Where(dm => dm.ParentId == null && dm.TrangThai == true)
+                .OrderBy(dm => dm.ThuTu)
+                .ToListAsync();
 
-            // 2. Tải toàn bộ đối tượng Sanpham dựa trên danh sách ID đã lọc (Chỉ lọc, không sắp xếp SQL)
-            var products = await _context.Sanphams
-                                .Include(sp => sp.Danhgia)
-                                .Include(sp => sp.BientheSanphams)
-                                .Where(sp => requiredMaSps.Contains(sp.MaSp))
-                                .ToListAsync();
+            // 2. Lấy danh sách sản phẩm nổi bật (Top 8 theo LuotMua)
+            // Sử dụng DbSet Sanpham
+            var sanPhamNoiBat = await GetProductCards(
+                _context.Sanphams
+                    .OrderByDescending(sp => sp.LuotMua)
+                    .Take(8)
+            );
 
-            // 3. Sắp xếp lại danh sách trên bộ nhớ (Client-side sorting) theo thứ tự của requiredMaSps
-            var orderedProducts = products
-                .OrderBy(p => requiredMaSps.IndexOf(p.MaSp))
-                .ToList();
+            // 3. Lấy danh sách sản phẩm mới (Top 8 theo MaSP)
+            var sanPhamMoi = await GetProductCards(
+                _context.Sanphams
+                    // Sử dụng thuộc tính MaSp (PascalCase)
+                    .OrderByDescending(sp => sp.MaSp)
+                    .Take(8)
+            );
 
-            // 4. Kiểm tra HasMore
-            var totalCount = await _context.Sanphams.Select(sp => sp.MaSp).Distinct().CountAsync();
-            ViewBag.HasMore = (totalCount > orderedProducts.Count);
-
-            // 5. Lấy Danh mục
-            ViewBag.DanhMuc = await _context.Danhmucs
-                                            .Where(dm => dm.ParentId == null && dm.TrangThai == true)
-                                            .OrderBy(dm => dm.ThuTu)
-                                            .ToListAsync();
-
-            ViewData["IsHome"] = true;
-
-            return View(orderedProducts); // Trả về danh sách đã sắp xếp
-        }
-
-        // ===============================================
-        // LOAD MORE - Tải thêm sản phẩm (Phân trang theo GiaBan + MaSP)
-        // ===============================================
-        [HttpGet]
-        public async Task<IActionResult> LoadMore(decimal? lastPrice = null, int? lastId = null)
-        {
-            var productMinPriceQuery = GetProductPriceIdQuery();
-
-            // 1. Lọc Compound Key
-            if (lastPrice.HasValue && lastId.HasValue)
+            var viewModel = new HomeViewModel
             {
-                decimal lastPriceValue = lastPrice.Value;
-                int lastIdValue = lastId.Value;
+                DanhMucCha = danhMucCha,
+                SanPhamNoiBat = sanPhamNoiBat,
+                SanPhamMoi = sanPhamMoi
+            };
 
-                productMinPriceQuery = productMinPriceQuery.Where(p =>
-                    p.MinPrice < lastPriceValue ||
-                    (p.MinPrice == lastPriceValue && p.MaSp < lastIdValue)
-                );
-            }
+            return View(viewModel);
+        }
 
-            // 2. Lấy danh sách các MaSP cần tải
-            var requiredMaSps = await productMinPriceQuery
-                                        .Select(p => p.MaSp)
-                                        .Take(PageSize)
-                                        .ToListAsync();
+        /// <summary>
+        /// Hàm helper để chuyển đổi IQueryable<Sanpham> thành List<ProductCardViewModel>,
+        /// đồng thời tính toán Giá thấp nhất.
+        /// </summary>
+        private async Task<List<ProductCardViewModel>> GetProductCards(IQueryable<Sanpham> query)
+        {
+            // Lấy danh sách MaSp từ truy vấn
+            var productIds = await query.Select(sp => sp.MaSp).ToListAsync();
 
-            // 3. Tải toàn bộ đối tượng Sanpham (Không sắp xếp SQL)
-            var newProducts = await _context.Sanphams
-                                .Include(sp => sp.Danhgia)
-                                .Include(sp => sp.BientheSanphams)
-                                .Where(sp => requiredMaSps.Contains(sp.MaSp))
-                                .ToListAsync();
+            // Lấy giá thấp nhất cho mỗi sản phẩm từ Biến Thể
+            // Sử dụng DbSet BientheSanpham và thuộc tính MaSp (PascalCase)
+            var lowestPrices = await _context.BientheSanphams
+                .Where(bt => productIds.Contains(bt.MaSp))
+                .GroupBy(bt => bt.MaSp)
+                .Select(g => new
+                {
+                    MaSP = g.Key,
+                    GiaThapNhat = g.Min(bt => bt.GiaBan)
+                })
+                .ToDictionaryAsync(x => x.MaSP, x => x.GiaThapNhat);
 
-            // 4. Sắp xếp lại danh sách trên bộ nhớ (Client-side sorting)
-            var orderedNewProducts = newProducts
-                .OrderBy(p => requiredMaSps.IndexOf(p.MaSp))
-                .ToList();
+            // Lấy thông tin SP và THUONGHIEU (dùng Include)
+            var products = await query
+                // Sử dụng Navigation Property MaThNavigation (Chính xác theo Scaffolding)
+                .Include(sp => sp.MaThNavigation)
+                .ToListAsync();
 
-            // 5. Kiểm tra HasMore
-            var lastLoadedProduct = orderedNewProducts.LastOrDefault();
-            var hasMore = false;
-
-            if (lastLoadedProduct != null)
+            return products.Select(sp => new ProductCardViewModel
             {
-                decimal lastPriceLoaded = lastLoadedProduct.GiaBanThapNhat;
-                int lastLoadedId = lastLoadedProduct.MaSp;
-
-                // Kiểm tra xem còn sản phẩm nào thỏa mãn điều kiện Compound Key hay không
-                hasMore = await GetProductPriceIdQuery().Where(p =>
-                       p.MinPrice < lastPriceLoaded ||
-                       (p.MinPrice == lastPriceLoaded && p.MaSp < lastLoadedId)
-                   ).AnyAsync();
-            }
-
-            ViewBag.HasMore = hasMore;
-            ViewData["IsHome"] = true;
-
-            return PartialView("_ProductListPartial", orderedNewProducts);
-        }
-        // ===============================================
-        // Các Action khác (giữ nguyên)
-        // ===============================================
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+                MaSP = sp.MaSp, // Sử dụng MaSp
+                TenSP = sp.TenSp!, // Sử dụng TenSp
+                HinhAnh = sp.HinhAnh!,
+                // Sử dụng Navigation Property MaThNavigation.TenTh (Chính xác theo Scaffolding)
+                TenThuongHieu = sp.MaThNavigation!.TenTh,
+                GiaThapNhat = lowestPrices.GetValueOrDefault(sp.MaSp, 0),
+            }).ToList();
         }
     }
 }

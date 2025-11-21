@@ -16,7 +16,29 @@
     input[type=number] {
         -moz-appearance: textfield;
     }
+
+    /* Màn hình chờ khi xử lý */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.7);
+        z-index: 9999;
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
 </style>
+
+<!-- Loading Overlay -->
+<div id="cart-loading" class="loading-overlay">
+    <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-3"></div>
+        <p class="text-indigo-700 font-semibold">Đang xử lý...</p>
+    </div>
+</div>
 
 <div class="bg-gray-50 min-h-screen py-8">
     <div class="container mx-auto px-4">
@@ -32,19 +54,17 @@
             </a>
         </div>
 
-        <!-- Thông báo (Alerts) -->
+        <!-- Thông báo Server (TempData) -->
         @if (TempData["Success"] != null)
         {
-            <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg shadow-sm flex items-center gap-3 animate-fade-in">
-                <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                <p class="text-green-800 font-medium">@TempData["Success"]</p>
+            <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg shadow-sm flex items-center gap-3">
+                <i class="fas fa-check-circle text-green-500"></i><p class="text-green-800 font-medium">@TempData["Success"]</p>
             </div>
         }
         @if (TempData["Error"] != null)
         {
-            <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-sm flex items-center gap-3 animate-fade-in">
-                <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
-                <p class="text-red-800 font-medium">@TempData["Error"]</p>
+            <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-sm flex items-center gap-3">
+                <i class="fas fa-exclamation-circle text-red-500"></i><p class="text-red-800 font-medium">@TempData["Error"]</p>
             </div>
         }
 
@@ -52,7 +72,7 @@
         {
             <div class="flex flex-col lg:flex-row gap-8">
 
-                <!-- LEFT COLUMN: CART ITEMS -->
+                <!-- CỘT TRÁI: DANH SÁCH SẢN PHẨM -->
                 <div class="lg:w-3/4">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
@@ -71,86 +91,48 @@
                                 <div class="p-6 hover:bg-gray-50/50 transition duration-200">
                                     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
 
-                                        <!-- 1. Info (Ảnh + Tên) -->
+                                        <!-- Info -->
                                         <div class="md:col-span-6 flex gap-5">
-                                            <!-- Xử lý ảnh thông minh -->
                                             <div class="w-24 h-24 flex-shrink-0 bg-white rounded-xl border border-gray-200 overflow-hidden relative group">
                                                 @{
                                                     string imgUrl = item.HinhAnh;
-                                                    if (!string.IsNullOrEmpty(imgUrl) && !imgUrl.StartsWith("http") && !imgUrl.StartsWith("/"))
-                                                    {
-                                                        imgUrl = $"/images/products/{imgUrl}";
-                                                    }
+                                                    if (!string.IsNullOrEmpty(imgUrl) && !imgUrl.StartsWith("http") && !imgUrl.StartsWith("/")) { imgUrl = $"/images/products/{imgUrl}"; }
                                                 }
-                                                <img src="@imgUrl"
-                                                     alt="@item.TenSanpham"
-                                                     class="w-full h-full object-cover object-center group-hover:scale-110 transition duration-500"
-                                                     onerror="this.onerror=null; this.src='https://placehold.co/150x150/f3f4f6/9ca3af?text=No+Image';">
+                                                <img src="@imgUrl" class="w-full h-full object-cover object-center group-hover:scale-110 transition duration-500" onerror="this.src='https://placehold.co/150x150?text=No+Image';">
                                             </div>
-
                                             <div class="flex flex-col justify-center">
                                                 <div class="text-xs font-bold text-indigo-500 uppercase tracking-wide mb-1">@item.TenThuongHieu</div>
-                                                <a href="@Url.Action("Detail", "Product", new { productId = item.MaBienThe })"
-                                                   class="text-base font-bold text-gray-900 hover:text-indigo-600 transition line-clamp-1 mb-1">
-                                                    @item.TenSanpham
-                                                </a>
+                                                <a href="@Url.Action("Detail", "Product", new { productId = item.MaBienThe })" class="text-base font-bold text-gray-900 hover:text-indigo-600 transition line-clamp-1 mb-1">@item.TenSanpham</a>
                                                 <div class="flex flex-wrap gap-2 mt-1">
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                                                        Màu: @item.TenMau
-                                                    </span>
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                                                        Size: @item.TenKichThuoc
-                                                    </span>
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-800">Màu: @item.TenMau</span>
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-800">Size: @item.TenKichThuoc</span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <!-- 2. Đơn giá -->
-                                        <div class="hidden md:block md:col-span-2 text-center">
-                                            <span class="text-sm font-medium text-gray-600">@item.DonGia.ToString("N0")₫</span>
-                                        </div>
+                                        <!-- Đơn giá -->
+                                        <div class="hidden md:block md:col-span-2 text-center"><span class="text-sm font-medium text-gray-600">@item.DonGia.ToString("N0")₫</span></div>
 
-                                        <!-- 3. Bộ điều khiển số lượng (+/-) -->
+                                        <!-- Số lượng -->
                                         <div class="md:col-span-2 flex justify-center">
                                             <form asp-action="UpdateCart" method="post" id="form-update-@item.MaGioHang" class="flex items-center">
                                                 <input type="hidden" name="maGioHang" value="@item.MaGioHang" />
-
                                                 <div class="flex items-center border border-gray-300 rounded-lg bg-white overflow-hidden shadow-sm w-28">
-                                                    <!-- Nút Trừ -->
-                                                    <button type="button" onclick="updateQuantity(@item.MaGioHang, -1)"
-                                                            class="w-8 h-9 flex items-center justify-center bg-white hover:bg-gray-100 border-r border-gray-200 transition text-gray-600">
-                                                        <i class="fas fa-minus text-xs"></i>
-                                                    </button>
-
-                                                    <!-- Input -->
-                                                    <input type="number" id="qty-@item.MaGioHang" name="soLuongMoi"
-                                                           value="@item.SoLuong" min="1" max="@item.SoLuongTon"
-                                                           class="w-full h-9 text-center border-none focus:ring-0 text-sm font-semibold text-gray-800 p-0"
-                                                           readonly />
-
-                                                    <!-- Nút Cộng -->
-                                                    <button type="button" onclick="updateQuantity(@item.MaGioHang, 1)"
-                                                            class="w-8 h-9 flex items-center justify-center bg-white hover:bg-gray-100 border-l border-gray-200 transition text-gray-600"
-                                                            @(item.SoLuong >= item.SoLuongTon ? "disabled" : "")>
-                                                        <i class="fas fa-plus text-xs"></i>
-                                                    </button>
+                                                    <button type="button" onclick="changeQty(@item.MaGioHang, -1)" class="w-8 h-9 flex items-center justify-center bg-white hover:bg-gray-100 border-r border-gray-200 text-gray-600"><i class="fas fa-minus text-xs"></i></button>
+                                                    <input type="number" id="qty-@item.MaGioHang" name="soLuongMoi" value="@item.SoLuong" min="1" max="@item.SoLuongTon" class="w-full h-9 text-center border-none focus:ring-0 text-sm font-semibold text-gray-800 p-0" readonly />
+                                                    <button type="button" onclick="changeQty(@item.MaGioHang, 1)" class="w-8 h-9 flex items-center justify-center bg-white hover:bg-gray-100 border-l border-gray-200 text-gray-600" @(item.SoLuong >= item.SoLuongTon ? "disabled" : "")><i class="fas fa-plus text-xs"></i></button>
                                                 </div>
                                             </form>
                                         </div>
 
-                                        <!-- 4. Thành tiền & Xóa -->
+                                        <!-- Thành tiền & Xóa -->
                                         <div class="md:col-span-2 text-right flex flex-col items-end justify-center gap-3">
                                             <span class="text-indigo-600 font-bold text-lg">@item.ThanhTien.ToString("N0")₫</span>
-
                                             <form asp-action="RemoveFromCart" method="post">
                                                 <input type="hidden" name="maGioHang" value="@item.MaGioHang" />
-                                                <button type="submit" class="text-gray-400 hover:text-red-500 transition text-sm flex items-center gap-1 group" title="Xóa">
-                                                    <i class="far fa-trash-alt group-hover:scale-110 transition-transform"></i>
-                                                    <span class="md:hidden">Xóa</span>
-                                                </button>
+                                                <button type="submit" class="text-gray-400 hover:text-red-500 transition text-sm flex items-center gap-1 group" title="Xóa"><i class="far fa-trash-alt group-hover:scale-110 transition-transform"></i></button>
                                             </form>
                                         </div>
-
                                     </div>
                                 </div>
                             }
@@ -158,43 +140,59 @@
                     </div>
                 </div>
 
-                <!-- RIGHT COLUMN: SUMMARY -->
+                <!-- CỘT PHẢI: TỔNG KẾT & VOUCHER -->
                 <div class="lg:w-1/4">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
-                        <h2 class="text-lg font-bold text-gray-900 mb-6 pb-4 border-b border-gray-100">
-                            Tổng đơn hàng
-                        </h2>
+                        <h2 class="text-lg font-bold text-gray-900 mb-6 pb-4 border-b border-gray-100">Tổng đơn hàng</h2>
 
+                        <!-- KHU VỰC NHẬP MÃ GIẢM GIÁ -->
+                        <div class="mb-6 relative">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Mã giảm giá</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="voucher-code" placeholder="Nhập mã..."
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500 uppercase font-semibold tracking-wider" />
+                                <button type="button" onclick="applyVoucher()" id="btn-apply-voucher"
+                                        class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 transition whitespace-nowrap">
+                                    Áp dụng
+                                </button>
+                            </div>
+                            <p id="voucher-message" class="text-xs mt-2 hidden"></p>
+                        </div>
+
+                        <!-- THÔNG TIN THANH TOÁN -->
                         <div class="space-y-4 mb-6">
                             <div class="flex justify-between text-sm text-gray-600">
                                 <span>Tạm tính</span>
-                                <span class="font-medium text-gray-900">@Model.TamTinh.ToString("N0")₫</span>
+                                <!-- Lưu giá trị gốc vào data-value để JS tính toán -->
+                                <span class="font-medium text-gray-900" id="subtotal-display" data-value="@Model.TamTinh">@Model.TamTinh.ToString("N0")₫</span>
                             </div>
+
                             <div class="flex justify-between text-sm text-gray-600">
                                 <span>Giảm giá</span>
-                                <span class="font-medium text-green-600">0₫</span>
+                                <span class="font-medium text-green-600" id="discount-display">0₫</span>
                             </div>
-                            <div class="flex justify-between text-sm text-gray-600">
+
+                            <div class="flex justify-between text-sm text-gray-600 items-center">
                                 <span>Vận chuyển</span>
-                                <span class="text-xs text-indigo-500 bg-indigo-50 px-2 py-1 rounded-full">Miễn phí</span>
+                                <span class="text-xs text-indigo-500 bg-indigo-50 px-2 py-1 rounded-full font-medium">Miễn phí</span>
                             </div>
 
                             <div class="pt-4 border-t border-gray-100 flex justify-between items-end">
                                 <span class="text-base font-bold text-gray-900">Tổng cộng</span>
                                 <div class="text-right">
-                                    <span class="block text-2xl font-black text-indigo-600">@Model.TamTinh.ToString("N0")₫</span>
+                                    <span class="block text-2xl font-black text-indigo-600" id="total-display">@Model.TamTinh.ToString("N0")₫</span>
                                     <span class="text-[10px] text-gray-400 font-normal">(Đã bao gồm VAT)</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Nút Thanh Toán -->
-                        <a href="@Url.Action("Checkout", "Order")" class="block w-full bg-indigo-600 text-white text-center font-bold py-4 rounded-xl shadow-lg hover:bg-indigo-700 hover:shadow-indigo-200 hover:-translate-y-0.5 transition-all duration-300">
+                        <!-- NÚT THANH TOÁN (Xử lý JS trước khi chuyển trang) -->
+                        <button onclick="proceedToCheckout()" class="block w-full bg-indigo-600 text-white text-center font-bold py-4 rounded-xl shadow-lg hover:bg-indigo-700 hover:shadow-indigo-200 hover:-translate-y-0.5 transition-all duration-300 uppercase tracking-wider">
                             THANH TOÁN NGAY
-                        </a>
+                        </button>
 
-                        <!-- Payment Icons -->
-                        <div class="mt-8 pt-6 border-t border-gray-100">
+                        <!-- ICON THANH TOÁN -->
+                        <div class="mt-8 pt-6 border-t border-gray-100 text-center">
                             <p class="text-xs text-center text-gray-400 mb-3">Chúng tôi chấp nhận</p>
                             <div class="flex justify-center gap-3 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
                                 <i class="fab fa-cc-visa text-2xl text-blue-900"></i>
@@ -209,16 +207,13 @@
         }
         else
         {
-            <!-- TRẠNG THÁI GIỎ HÀNG TRỐNG -->
+            <!-- GIỎ HÀNG TRỐNG -->
             <div class="max-w-2xl mx-auto text-center py-16">
                 <div class="w-48 h-48 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
                     <img src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" alt="Empty Cart" class="w-24 h-24 opacity-50 grayscale">
                 </div>
                 <h2 class="text-2xl font-bold text-gray-900 mb-3">Giỏ hàng của bạn đang trống</h2>
-                <p class="text-gray-500 mb-8">Có vẻ như bạn chưa thêm sản phẩm nào. Hãy khám phá bộ sưu tập mới nhất của chúng tôi nhé!</p>
-                <a href="@Url.Action("List", "Product")" class="inline-flex items-center gap-2 bg-indigo-600 text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:bg-indigo-700 hover:shadow-indigo-200 transition transform hover:-translate-y-1">
-                    <i class="fas fa-shopping-bag"></i> Mua Sắm Ngay
-                </a>
+                <a href="@Url.Action("List", "Product")" class="inline-flex items-center gap-2 bg-indigo-600 text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:bg-indigo-700 transition">Mua Sắm Ngay</a>
             </div>
         }
     </div>
@@ -226,21 +221,104 @@
 
 @section Scripts {
     <script>
-        // Hàm xử lý tăng giảm số lượng
+        // 1. HÀM HIỂN THỊ LOADING
+        function showLoading() { document.getElementById('cart-loading').style.display = 'flex'; }
+
+        // 2. HÀM TĂNG/GIẢM SỐ LƯỢNG
         function updateQuantity(itemId, change) {
             const input = document.getElementById(`qty-${itemId}`);
             let currentValue = parseInt(input.value);
             const maxStock = parseInt(input.max);
             const newValue = currentValue + change;
 
-            // Validate
             if (newValue >= 1 && newValue <= maxStock) {
                 input.value = newValue;
-                // Submit form tự động
-                document.getElementById(`form-update-${itemId}`).submit();
+                showLoading(); // Hiện loading
+                document.getElementById(`form-update-${itemId}`).submit(); // Gửi form cập nhật
             } else if (newValue > maxStock) {
                 alert(`Xin lỗi, chỉ còn ${maxStock} sản phẩm trong kho.`);
             }
+        }
+
+        // 3. HÀM XỬ LÝ MÃ GIẢM GIÁ (AJAX)
+        const formatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
+        let validVoucherCode = ""; // Biến lưu mã hợp lệ để gửi sang trang Checkout
+
+        async function applyVoucher() {
+            const codeInput = document.getElementById('voucher-code');
+            const subtotalEl = document.getElementById('subtotal-display');
+
+            const code = codeInput.value.trim();
+            const subtotal = parseFloat(subtotalEl.dataset.value); // Lấy giá gốc
+
+            if (!code) {
+                showMessage("Vui lòng nhập mã.", "text-red-500");
+                return;
+            }
+
+            // Hiệu ứng loading cho nút
+            const btn = document.getElementById('btn-apply-voucher');
+            const originalText = btn.innerText;
+            btn.innerText = "Checking...";
+            btn.disabled = true;
+
+            try {
+                // Gọi API VoucherController để kiểm tra mã
+                const response = await fetch(`/api/Voucher/Check?code=${code}&totalAmount=${subtotal}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    // ÁP DỤNG THÀNH CÔNG
+                    document.getElementById('discount-display').innerText = `-${formatter.format(data.discount)}`;
+                    document.getElementById('total-display').innerText = formatter.format(data.finalTotal);
+
+                    showMessage(data.message, "text-green-600");
+                    validVoucherCode = data.voucherCode; // Lưu lại mã
+
+                    // Khóa ô nhập
+                    codeInput.classList.add("bg-gray-100", "text-gray-500");
+                    codeInput.readOnly = true;
+                    btn.innerText = "Đã dùng";
+                } else {
+                    // MÃ SAI / HẾT HẠN
+                    showMessage(data.message, "text-red-500");
+                    resetVoucher();
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error(error);
+                showMessage("Lỗi kết nối server.", "text-red-500");
+                resetVoucher();
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Hàm hiển thị thông báo nhỏ dưới ô nhập mã
+        function showMessage(msg, colorClass) {
+            const el = document.getElementById('voucher-message');
+            el.textContent = msg;
+            el.className = `text-xs mt-2 block font-semibold ${colorClass}`;
+            el.classList.remove('hidden');
+        }
+
+        // Hàm reset về trạng thái ban đầu
+        function resetVoucher() {
+            validVoucherCode = "";
+            document.getElementById('discount-display').innerText = "0₫";
+            const subtotal = parseFloat(document.getElementById('subtotal-display').dataset.value);
+            document.getElementById('total-display').innerText = formatter.format(subtotal);
+        }
+
+        // 4. HÀM CHUYỂN HƯỚNG THANH TOÁN
+        function proceedToCheckout() {
+            let url = '@Url.Action("Checkout", "Order")';
+            // Nếu có mã giảm giá hợp lệ, gắn vào URL để gửi sang OrderController
+            if (validVoucherCode) {
+                url += `?voucherCode=${encodeURIComponent(validVoucherCode)}`;
+            }
+            window.location.href = url;
         }
     </script>
 }

@@ -1,0 +1,42 @@
+﻿@model int // Nhận MaHD (Mã hóa đơn) từ Controller
+
+@{
+    ViewData["Title"] = "Đặt Hàng Thành Công";
+    Layout = "_Layout";
+}
+
+<div class="min-h-[600px] flex items-center justify-center bg-gray-50 py-12">
+    <div class="bg-white p-10 rounded-3xl shadow-xl text-center max-w-lg w-full mx-4 border border-gray-100 relative overflow-hidden">
+
+        <!-- Decorative Confetti (Hiệu ứng trang trí) -->
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+
+        <!-- Icon Success Animated -->
+        <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce shadow-sm">
+            <i class="fas fa-check text-5xl text-green-500"></i>
+        </div>
+
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Đặt Hàng Thành Công!</h1>
+        <p class="text-gray-500 mb-8">Cảm ơn bạn đã tin tưởng và mua hàng tại ShopGiay.</p>
+
+        <!-- Khu vực hiển thị Mã đơn hàng -->
+        <div class="bg-gray-50 rounded-xl p-6 mb-8 border border-gray-200 border-dashed">
+            <p class="text-sm text-gray-500 uppercase font-bold mb-2 tracking-wider">Mã đơn hàng của bạn</p>
+            <p class="text-4xl font-black text-indigo-600 tracking-widest">#@Model</p>
+        </div>
+
+        <p class="text-sm text-gray-600 mb-8 leading-relaxed">
+            Chúng tôi sẽ sớm liên hệ với bạn để xác nhận đơn hàng.<br>
+            Bạn có thể theo dõi trạng thái đơn hàng trong phần <a href="@Url.Action("History", "Order")" class="text-indigo-600 font-bold hover:underline">Lịch sử mua hàng</a>.
+        </p>
+
+        <!-- Các nút điều hướng -->
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            
+            <!-- Link xem lịch sử đơn hàng -->
+            <a href="@Url.Action("History", "Order")" class="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition hover:text-indigo-600">
+                Xem đơn hàng
+            </a>
+        </div>
+    </div>
+</div>

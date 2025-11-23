@@ -1,24 +1,41 @@
 # 👟 Quản Lý Cửa Hàng Giày (Shoe Store Management)
 
-!
+![.NET Core](https://img.shields.io/badge/.NET%20Core-8.0-purple?style=for-the-badge&logo=dotnet)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-blue?style=for-the-badge&logo=bootstrap)
+![SQL Server](https://img.shields.io/badge/SQL%20Server-latest-red?style=for-the-badge&logo=microsoft-sql-server)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
+> **Báo cáo Đồ án Môn học: Quản lý Dự án Phần mềm**
+>
+> 👨‍🏫 **Giảng viên hướng dẫn:** TS. Nguyễn Văn Hòa
+>
+> 👥 **Nhóm thực hiện:** Nhóm 15
 
 ## 📝 Mô tả Dự án
 
 Đây là hệ thống quản lý toàn diện dành cho cửa hàng bán giày, được xây dựng trên nền tảng **ASP.NET Core 8 MVC**. Mục tiêu của dự án là số hóa và tối ưu hóa các quy trình nghiệp vụ cốt lõi, từ quản lý kho hàng, đơn đặt hàng, thông tin khách hàng đến báo cáo doanh thu, giúp chủ cửa hàng dễ dàng kiểm soát hoạt động kinh doanh một cách hiệu quả và chính xác.
 
+## 👥 Thành viên
+
+| STT | Họ và Tên | MSSV |
+|:---:|:---|:---|
+| 1 | Bùi Đỗ Tấn Hưng | DTH225658 | 
+| 2 | Nguyễn Thành Luận | DTH225690 | 
+| 3 | Võ Xuân Phát | DTH225722 | 
+| 4 | Nguyễn Phi Long | DPM225438 | 
+
 ---
 
-## 🛠️ Công nghệ Sử dụng
+## 🛠️ Công nghệ Sử dụng (Tech Stack)
 
-Dự án được phát triển dựa trên các công nghệ và thư viện hiện đại sau, tập trung vào hệ sinh thái .NET:
+Dự án được phát triển dựa trên hệ sinh thái Microsoft .NET hiện đại:
 
-* **Ngôn ngữ:** C#
-* **Framework Back-end:** **ASP.NET Core 8.0 (MVC)**
-* **Cơ sở Dữ liệu:** SQL Server
-* **Truy cập Dữ liệu:** Entity Framework Core
-* **Front-end:** HTML5, CSS3, JavaScript, Bootstrap 5
-* **Quản lý Phụ thuộc:** NuGet
-* **Kiểm soát Phiên bản:** Git
+| Lĩnh vực | Công nghệ |
+| :--- | :--- |
+| **Backend Framework** | ![C#](https://img.shields.io/badge/C%23-239120?style=flat-square&logo=c-sharp&logoColor=white) **ASP.NET Core 8.0 (MVC)** |
+| **Database** | ![SQL Server](https://img.shields.io/badge/SQL_Server-CC2927?style=flat-square&logo=microsoft-sql-server&logoColor=white) **SQL Server** + Entity Framework Core |
+| **Frontend** | ![Bootstrap](https://img.shields.io/badge/Bootstrap-563D7C?style=flat-square&logo=bootstrap&logoColor=white) HTML5, CSS3, JS, Bootstrap 5 |
+| **Version Control** | ![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white) Git & GitHub |
 
 ---
 
@@ -102,4 +119,4 @@ Hệ thống cung cấp các chức năng quản lý cốt lõi (CRUD) để v�
 
 ## ⚖️ Giấy phép (License)
 
-Dự án này được phát hành dưới Giấy phép **MIT**. Vui lòng xem tệp [LICENSE](LICENSE) để biết thêm chi tiết về quyền và giới hạn.
+Dự án thuộc bản quyền của Nhóm 15 - Lớp học phần Quản lý dự án phần mềm. Mã nguồn được chia sẻ dưới giấy phép MIT.

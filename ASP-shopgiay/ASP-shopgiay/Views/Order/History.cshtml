@@ -1,0 +1,74 @@
+﻿@model IEnumerable<ASP_shopgiay.Models.Hoadon>
+
+@{
+    ViewData["Title"] = "Lịch Sử Mua Hàng";
+    Layout = "_Layout";
+}
+
+<div class="bg-gray-50 min-h-screen py-8">
+    <div class="container mx-auto px-4">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Lịch sử đơn hàng</h1>
+
+        @if (Model.Any())
+        {
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-gray-600">
+                        <thead class="bg-gray-50 text-gray-900 uppercase font-bold">
+                            <tr>
+                                <th class="px-6 py-4">Mã đơn</th>
+                                <th class="px-6 py-4">Ngày đặt</th>
+                                <th class="px-6 py-4">Người nhận</th>
+                                <th class="px-6 py-4">Tổng tiền</th>
+                                <th class="px-6 py-4">Trạng thái</th>
+                                <th class="px-6 py-4 text-center">Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            @foreach (var item in Model)
+                            {
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 font-medium text-indigo-600">#@item.MaHd</td>
+                                    <td class="px-6 py-4">@item.Ngay?.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="px-6 py-4">
+                                        <p class="font-medium text-gray-900">@item.TenNguoiNhan</p>
+                                        <p class="text-xs text-gray-500">@item.DienThoaiGiaoHang</p>
+                                    </td>
+                                    <td class="px-6 py-4 font-bold text-gray-900">@string.Format("{0:N0}đ", item.TongTien)</td>
+                                    <td class="px-6 py-4">
+                                        @if (item.MaTrangThai == 1)
+                                        {
+                                            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">Chờ xác nhận</span>
+                                        }
+                                        else if (item.MaTrangThai == 4)
+                                        {
+                                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">Hoàn thành</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-bold">Khác</span>
+                                        }
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <!-- Nút xem chi tiết (Bạn có thể phát triển thêm Action Details cho Order sau này) -->
+                                        <button class="text-indigo-600 hover:text-indigo-900 font-medium">Xem</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-16 bg-white rounded-xl shadow-sm">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-box-open text-3xl text-gray-400"></i>
+                </div>
+                <p class="text-gray-500 mb-4">Bạn chưa có đơn hàng nào.</p>
+                <a href="/" class="text-indigo-600 font-bold hover:underline">Mua sắm ngay</a>
+            </div>
+        }
+    </div>
+</div>

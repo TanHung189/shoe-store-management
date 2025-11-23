@@ -5,6 +5,7 @@ using ASP_shopgiay.ViewModels;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -159,6 +160,18 @@ namespace ASP_shopgiay.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
+        }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            // Lấy email user từ Claims
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login");
+
+            var user = await _context.Taikhoans.FirstOrDefaultAsync(u => u.Email == email);
+            return View(user);
         }
     }
 }

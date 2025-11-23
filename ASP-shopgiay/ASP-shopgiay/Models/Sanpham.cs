@@ -22,7 +22,7 @@ public partial class Sanpham
     public string TenSp { get; set; } = null!;
 
     [Column("MaDM")]
-    [Display(Name = "Mã doanh mục")]
+    [Display(Name = "Mã danh mục")]
     public int MaDm { get; set; }
 
     [Column("MaTH")]

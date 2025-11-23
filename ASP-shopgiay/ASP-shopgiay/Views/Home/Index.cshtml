@@ -1,217 +1,156 @@
-﻿@model IEnumerable<ASP_shopgiay.Models.Sanpham>
+﻿@model ASP_shopgiay.Controllers.HomeViewModel
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
 
 @{
-	ViewData["Title"] = "Trang chủ ShoeSphere";
-	// Ép kiểu danh mục từ ViewBag sang List<Danhmuc> để sử dụng
-	var danhMuc = ViewBag.DanhMuc as List<ASP_shopgiay.Models.Danhmuc>;
+    ViewData["Title"] = "Trang Chủ Shop Giày";
+    Layout = null; // Tạm thời bỏ Layout để xem full trang
 }
 
-<section class="py-3">
-	<div class="container">
-		@* ... (Code Banner giữ nguyên) ... *@
-	</div>
-</section>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Shop Giày Sneaker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f9;
+        }
 
-<section class="py-2 bg-white shadow-sm mb-4">
-	<div class="container d-flex justify-content-between align-items-center">
-		@* ... (Code Danh mục ngang giữ nguyên) ... *@
-	</div>
-</section>
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
 
-<section class="py-5">
-	<div class="container px-4 px-lg-5 mt-3">
-		<div id="productList" class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-			@await Html.PartialAsync("_ProductListPartial", Model)
-		</div>
+        @@media (min-width: 640px) {
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
 
-		<div class="text-center mt-4" id="paginationButtons">
-			<button id="btnPrev" class="btn btn-outline-secondary me-3" style="display:none;">Trang trước</button>
-			<button id="btnHome" class="btn btn-outline-secondary me-3" style="display:none;">Về đầu</button>
-			<button id="btnLoadMore" class="btn btn-primary" style="display: @(ViewBag.HasMore ? "inline-block" : "none")">Xem thêm</button>
-		</div>
+        @@media (min-width: 1024px) {
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
 
-	</div>
-</section>
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/" class="text-2xl font-black text-indigo-700">SHOPGIAY</a>
 
-<div class="hasMoreFlag" data-hasmore="@ViewBag.HasMore" style="display:none;"></div>
+            <!-- Menu Danh mục Cha (Sử dụng dữ liệu từ Controller) -->
+            <nav class="hidden md:flex space-x-6">
+                @foreach (var dm in Model.DanhMucCha)
+                {
+                    <a href="@Url.Action("List", "Product", new { categoryId = dm.MaDm })"
+                       class="text-gray-700 font-semibold hover:text-indigo-600 transition duration-150">
+                        @dm.Ten
+                    </a>
+                }
+            </nav>
 
+            <!-- Khu vực Giỏ hàng và Đăng nhập/Đăng xuất -->
+            <div class="flex space-x-4 items-center">
+                <!-- Nút Giỏ hàng -->
+                <a href="#" class="text-gray-700 hover:text-indigo-600 p-2 rounded-full hover:bg-gray-100 transition relative">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+                </a>
 
-@section Scripts {
-	<script>
-		const pageSize = 8;
-		let pagesStack = [];
+                @if (User.Identity!.IsAuthenticated)
+                {
+                    <!-- ĐÃ ĐĂNG NHẬP -->
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm font-semibold text-gray-700">
+                            Xin chào, @User.FindFirst(ClaimTypes.Name)?.Value!
+                        </span>
 
-		const btnPrev = document.getElementById("btnPrev");
-		const btnHome = document.getElementById("btnHome");
-		const btnLoadMore = document.getElementById("btnLoadMore");
-		const productList = document.getElementById("productList");
+                        <!-- Nút Đăng xuất -->
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="bg-red-500 text-white text-sm px-3 py-2 rounded-lg hover:bg-red-600 transition">
+                                Đăng xuất
+                            </button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <!-- CHƯA ĐĂNG NHẬP -->
+                    <a href="@Url.Action("Login", "Account")"
+                       class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition font-semibold text-sm">
+                        Đăng nhập
+                    </a>
+                    <a href="@Url.Action("Register", "Account")"
+                       class="text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 transition font-semibold text-sm border border-indigo-600 hidden sm:inline-block">
+                        Đăng ký
+                    </a>
+                }
+            </div>
+        </div>
+    </header>
 
-		function getCards() {
-			return productList.querySelectorAll(".col.mb-5");
-		}
+    <main class="container mx-auto px-4 py-8">
+        <!-- Banner/Hero Section -->
+        <div class="bg-indigo-600 text-white rounded-2xl p-8 mb-12 shadow-xl">
+            <h1 class="text-4xl font-extrabold mb-2">SNEAKER CHẤT - GIÁ THẬT</h1>
+            <p class="text-xl opacity-80 mb-6">Khám phá bộ sưu tập mới nhất từ Nike, Adidas, Puma và Bitis.</p>
+            <a href="@Url.Action("List", "Product")" class="bg-white text-indigo-600 font-bold py-3 px-6 rounded-full inline-block hover:bg-gray-100 transition shadow-lg">
+                Xem Tất Cả Sản Phẩm
+            </a>
+        </div>
 
-		// Khởi tạo ban đầu (Cập nhật để lấy price và id)
-		window.addEventListener('load', () => {
-			const initialCards = getCards();
-			const initialCount = initialCards.length;
-			if (initialCount === 0) {
-				btnLoadMore.style.display = "none";
-				return;
-			}
-			const anchor = initialCards[0] ? initialCards[0].offsetTop : productList.offsetTop;
-			pagesStack = [];
+        <!-- Khối 1: Sản phẩm Nổi bật -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b-2 border-indigo-200 pb-2">🔥 Sản Phẩm Nổi Bật</h2>
+            <div class="product-grid">
+                @if (Model.SanPhamNoiBat.Any())
+                {
+                    @foreach (var product in Model.SanPhamNoiBat)
+                    {
+                        @* Sử dụng Partial View để render thẻ sản phẩm *@
+                        <partial name="_ProductCard" model="product" />
+                    }
+                }
+                else
+                {
+                    <p class="col-span-4 text-gray-500 text-center py-8">Chưa có sản phẩm nổi bật nào để hiển thị.</p>
+                }
+            </div>
+        </section>
 
-			// Lấy ID và Giá của sản phẩm cuối cùng trên trang 1
-			const lastCard = initialCards[initialCards.length - 1];
-			const lastIdValue = lastCard ? lastCard.dataset.id : null;
-			const lastPriceValue = lastCard ? lastCard.dataset.price : null;
+        <!-- Khối 2: Sản phẩm Mới -->
+        <section>
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b-2 border-indigo-200 pb-2">✨ Sản Phẩm Mới</h2>
+            <div class="product-grid">
+                @if (Model.SanPhamMoi.Any())
+                {
+                    @foreach (var product in Model.SanPhamMoi)
+                    {
+                        <partial name="_ProductCard" model="product" />
+                    }
+                }
+                else
+                {
+                    <p class="col-span-4 text-gray-500 text-center py-8">Chưa có sản phẩm mới nào.</p>
+                }
+            </div>
+        </section>
+    </main>
 
-			pagesStack.push({ lastId: lastIdValue, lastPrice: lastPriceValue, count: initialCount, anchor: anchor });
-
-			const initialFlag = document.querySelector('.hasMoreFlag');
-			if (initialFlag && initialFlag.dataset.hasmore === 'False') {
-				btnLoadMore.style.display = "none";
-			}
-			if (pagesStack.length > 1) {
-				btnPrev.style.display = "inline-block";
-				btnHome.style.display = "inline-block";
-			} else {
-				btnPrev.style.display = "none";
-				btnHome.style.display = "none";
-			}
-		});
-
-		// ================= Load More (Đã sửa để gửi cả Giá và ID) =================
-		btnLoadMore.addEventListener("click", async () => {
-			btnLoadMore.disabled = true;
-			btnLoadMore.innerText = "Đang tải...";
-
-			const cardsBefore = getCards();
-			const beforeCount = cardsBefore.length;
-			const lastCardBefore = cardsBefore[cardsBefore.length - 1];
-
-			// Lấy thông tin Compound Key của sản phẩm cuối cùng (Cần cho Keyset)
-			const lastId = lastCardBefore ? lastCardBefore.dataset.id : null;
-			const lastPrice = lastCardBefore ? lastCardBefore.dataset.price : null;
-
-			// GỌI CONTROLLER VỚI CẢ lastPrice VÀ lastId
-			const res = await fetch(`/Home/LoadMore?lastPrice=${encodeURIComponent(lastPrice ?? "")}&lastId=${encodeURIComponent(lastId ?? "")}`);
-			const html = await res.text();
-
-			const tempDiv = document.createElement("div");
-			tempDiv.innerHTML = html;
-
-			const newCards = tempDiv.querySelectorAll(".col.mb-5");
-			const newCount = newCards.length;
-			const hasMoreFlag = tempDiv.querySelector(".hasMoreFlag");
-			const hasMore = hasMoreFlag ? hasMoreFlag.dataset.hasmore === "True" : false;
-
-			if (newCount > 0) {
-				const cardsHtml = Array.from(newCards).map(el => el.outerHTML).join("");
-				productList.insertAdjacentHTML("beforeend", cardsHtml);
-
-				const allCards = getCards();
-				const firstNewCard = allCards[beforeCount];
-				const anchor = firstNewCard ? firstNewCard.offsetTop : productList.offsetTop;
-
-				// Lấy thông tin Compound Key của sản phẩm cuối cùng trong BATCH MỚI
-				const lastNewCard = allCards[allCards.length - 1];
-				const actualLastId = lastNewCard ? lastNewCard.dataset.id : lastId;
-				const actualLastPrice = lastNewCard ? lastNewCard.dataset.price : lastPrice;
-
-
-				// Lưu thông tin trang mới vào stack
-				pagesStack.push({
-					lastId: actualLastId,
-					lastPrice: actualLastPrice,
-					count: newCount,
-					anchor: anchor
-				});
-			}
-
-			if (pagesStack.length > 1) {
-				btnPrev.style.display = "inline-block";
-				btnHome.style.display = "inline-block";
-			} else {
-				btnPrev.style.display = "none";
-				btnHome.style.display = "none";
-			}
-
-			btnLoadMore.style.display = hasMore ? "inline-block" : "none";
-			btnLoadMore.disabled = false;
-			btnLoadMore.innerText = "Xem thêm";
-		});
-
-		// ================= Trang trước và Home (Giữ nguyên logic Keyset Stack của bạn) =================
-		// ... (Phần logic btnPrev và btnHome giữ nguyên) ...
-
-		// ================= Trang trước =================
-		btnPrev.addEventListener("click", () => {
-			if (pagesStack.length <= 1) return;
-
-			productList.classList.add("fade-out");
-
-			setTimeout(() => {
-				const currentPage = pagesStack.pop();
-				const prevPage = pagesStack[pagesStack.length - 1];
-
-				for (let i = 0; i < currentPage.count; i++) {
-					const lastCard = productList.querySelector(".col.mb-5:last-child");
-					if (lastCard) lastCard.remove();
-				}
-
-				if (pagesStack.length === 1) {
-					btnPrev.style.display = "none";
-					btnHome.style.display = "none";
-				}
-
-				btnLoadMore.style.display = "inline-block";
-
-				productList.classList.remove("fade-out");
-				productList.classList.add("fade-in");
-				window.scrollTo({ top: prevPage.anchor - 80, behavior: "smooth" });
-			}, 300);
-		});
-
-		// ================= Home =================
-		btnHome.addEventListener("click", async () => {
-			productList.classList.add("fade-out");
-			setTimeout(async () => {
-				// Load trang đầu (không có lastId, lastPrice)
-				const res = await fetch(`/Home/LoadMore`);
-				const html = await res.text();
-
-				const tempDiv = document.createElement('div');
-				tempDiv.innerHTML = html;
-				productList.innerHTML = tempDiv.innerHTML;
-
-				// Xóa và thiết lập lại stack
-				pagesStack = [];
-				const initialCards = getCards();
-				const initialCount = initialCards.length;
-				const lastCard = initialCards[initialCards.length - 1];
-
-				const lastIdValue = lastCard ? lastCard.dataset.id : null;
-				const lastPriceValue = lastCard ? lastCard.dataset.price : null;
-				const anchor = initialCards[0] ? initialCards[0].offsetTop : productList.offsetTop;
-
-				pagesStack.push({ lastId: lastIdValue, lastPrice: lastPriceValue, count: initialCount, anchor: anchor });
-
-				// Cập nhật nút
-				const hasMoreFlag = productList.querySelector('.hasMoreFlag');
-				const hasMore = hasMoreFlag ? hasMoreFlag.dataset.hasmore === 'True' : false;
-
-				btnPrev.style.display = "none";
-				btnHome.style.display = "none";
-				btnLoadMore.style.display = hasMore ? "inline-block" : "none";
-				btnLoadMore.disabled = false;
-				btnLoadMore.innerText = "Xem thêm";
-
-				productList.classList.remove("fade-out");
-				productList.classList.add("fade-in");
-
-				window.scrollTo({ top: productList.offsetTop - 100, behavior: "smooth" });
-			}, 200);
-		});
-	</script>
-}
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-4 py-8 text-center">
+            <p>&copy; @DateTime.Now.Year ShopGiay. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

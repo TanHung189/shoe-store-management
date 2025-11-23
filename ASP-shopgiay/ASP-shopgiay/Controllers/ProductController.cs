@@ -113,7 +113,77 @@ namespace ASP_shopgiay.Controllers
         }
 
         // Action Chi tiết Sản phẩm (Sẽ được xây dựng trong GIAI ĐOẠN 3)
+
         // public async Task<IActionResult> Detail(int productId) { ... }
+        // GIAI ĐOẠN 3: Action xử lý Trang Chi tiết Sản phẩm (DETAIL)
+        // ===============================================
+        public async Task<IActionResult> Detail(int productId)
+        {
+            // Truy vấn sản phẩm chính và các mối quan hệ cần thiết
+            var product = await _context.Sanphams!
+                .Include(sp => sp.MaThNavigation)    // Thương hiệu
+                .Include(sp => sp.MaDmNavigation)    // Danh mục
+                .Include(sp => sp.Danhgia!)          // Đánh giá
+                .FirstOrDefaultAsync(sp => sp.MaSp == productId);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            // Lấy TẤT CẢ biến thể có sẵn (Số lượng > 0)
+            var variants = await _context.BientheSanphams!
+                .Where(bt => bt.MaSp == productId && (bt.SoLuong ?? 0) > 0)
+                .Include(bt => bt.MaMauNavigation)
+                .Include(bt => bt.MaKichThuocNavigation)
+                .ToListAsync();
+
+            // --- Xử lý Dữ liệu cho ViewModel ---
+
+            // 1. Lấy danh sách Màu sắc và Kích thước duy nhất
+            // (Sử dụng DistinctBy để tránh lặp lại màu sắc/kích thước)
+            var availableColors = variants
+                .Select(v => v.MaMauNavigation!)
+                .DistinctBy(c => c.MaMau)
+                .ToList();
+
+            var availableSizes = variants
+                .Select(v => v.MaKichThuocNavigation!)
+                .DistinctBy(s => s.MaKichThuoc)
+                .ToList();
+
+            // 2. Chuẩn bị danh sách tất cả Variants cho JavaScript
+            var allVariantsForJs = variants.Select(v => new VariantDetail
+            {
+                MaBienThe = v.MaBienThe,
+                MaMau = v.MaMau,
+                MaKichThuoc = v.MaKichThuoc,
+                GiaBan = v.GiaBan,
+                SoLuongTon = v.SoLuong ?? 0,
+                HinhAnh = v.HinhAnh
+            }).ToList();
+
+            // 3. Tính toán Rating
+            var reviews = product.Danhgia.Where(dg => dg.DaDuyet == true).ToList();
+            // Hàm tính trung bình sao (làm tròn tới 0.5 gần nhất)
+            double avgRating = reviews.Any() ? Math.Round(reviews.Average(dg => (double)dg.SoSao) * 2) / 2 : 0;
+
+            // --- Xây dựng ViewModel ---
+            var viewModel = new ProductDetailViewModel
+            {
+                Product = product,
+                BrandName = product.MaThNavigation!.TenTh,
+                AvailableColors = availableColors,
+                AvailableSizes = availableSizes,
+                AllVariants = allVariantsForJs,
+                AverageRating = avgRating,
+                ReviewCount = reviews.Count,
+                Reviews = reviews.OrderByDescending(dg => dg.NgayDanhGia).Take(5).ToList() // Lấy 5 đánh giá gần nhất
+            };
+
+            return View(viewModel);
+        }
     }
+
 }
 

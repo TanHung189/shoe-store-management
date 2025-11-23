@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ASP_shopgiay.Models;
 
 [Table("KICHTHUOC")]
-[Index("TenKichThuoc", Name = "UQ__KICHTHUO__9D0743DA282DCC94", IsUnique = true)]
+[Index("TenKichThuoc", Name = "UQ__KICHTHUO__9D0743DA5A12B187", IsUnique = true)]
 public partial class Kichthuoc
 {
     [Key]

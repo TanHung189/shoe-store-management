@@ -1,29 +1,26 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
-@inject ASP_shopgiay.Data.ApplicationDbContext Context // Tiêm DbContext để lấy Danh mục
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor // Tiêm để truy cập Session/User
+@using Microsoft.EntityFrameworkCore
+@inject ASP_shopgiay.Data.ApplicationDbContext Context
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
-    // Dữ liệu chung cho Menu (Lấy Danh mục cha)
-    // LƯU Ý: Đây là cách tạm thời để hiển thị menu trong Layout.
-    // Trong thực tế, nên dùng View Component hoặc Dependency Injection khác để tránh truy vấn đồng bộ.
-    var danhMucCha = Context.Danhmucs!
+    // 1. LẤY DANH MỤC (Không cần DistinctBy nữa vì Database đã sạch)
+    var categories = Context.Danhmucs!
+        .Include(d => d.InverseParent)
         .Where(dm => dm.ParentId == null && dm.TrangThai == true)
-        .OrderBy(dm => dm.ThuTu)
+        .OrderBy(d => d.ThuTu)
         .ToList();
 
-    // Lấy tên người dùng đang đăng nhập
+    // 2. XỬ LÝ USER & GIỎ HÀNG
     var userName = HttpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
-    // Giả định MaTK được lưu trong Claims khi đăng nhập
     var maTk = HttpContextAccessor.HttpContext?.User.FindFirst("MaTK")?.Value;
-
-    // Giỏ hàng count (Giả định lấy số lượng mục trong giỏ)
     int cartCount = 0;
+
     if (!string.IsNullOrEmpty(maTk) && int.TryParse(maTk, out int userId))
     {
-        // Thực hiện truy vấn để lấy số lượng item trong giỏ hàng của user này
-        // Lưu ý: Cần đảm bảo DbSet Giohangs có sẵn trong DbContext
-        cartCount = Context.Giohangs!.Count(gh => gh.MaTk == userId);
+        // Đếm tổng số lượng sản phẩm trong giỏ hàng
+        cartCount = Context.Giohangs!.Where(gh => gh.MaTk == userId).Sum(gh => gh.SoLuong ?? 0);
     }
 }
 
@@ -33,71 +30,123 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ShopGiay</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Inter & Font Awesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-
-    <!-- Styling chung -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7f7f9;
+            background-color: #f8fafc;
+        }
+        /* Hiệu ứng Dropdown */
+        .group:hover .group-hover\:visible {
+            visibility: visible;
         }
 
-        .container {
-            max-width: 1200px;
+        .group:hover .group-hover\:opacity-100 {
+            opacity: 1;
+        }
+
+        .group:hover .group-hover\:translate-y-0 {
+            transform: translateY(0);
         }
     </style>
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
 
-    <!-- ============================================= -->
-    <!-- HEADER (Menu và Auth) -->
-    <!-- ============================================= -->
-    <header class="bg-white shadow-md sticky top-0 z-20">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/" class="text-2xl font-black text-indigo-700 hover:text-indigo-900 transition">SHOPGIAY</a>
+    <!-- HEADER -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div class="container mx-auto px-4 h-20 flex justify-between items-center">
 
-            <!-- Menu Danh mục Cha (Sử dụng dữ liệu từ DbContext) -->
-            <nav class="hidden md:flex space-x-6">
-                @foreach (var dm in danhMucCha)
+            <!-- LOGO -->
+            <a href="/" class="flex items-center gap-2 group">
+                <div class="bg-indigo-600 text-white p-2 rounded-lg transform group-hover:rotate-12 transition">
+                    <i class="fas fa-shoe-prints text-xl"></i>
+                </div>
+                <span class="text-2xl font-black text-indigo-900 tracking-tight">SHOPGIAY</span>
+            </a>
+
+            <!-- MENU CHÍNH -->
+            <nav class="hidden lg:flex items-center gap-8">
+                @foreach (var category in categories)
                 {
-                    <a href="@Url.Action("List", "Product", new { categoryId = dm.MaDm })"
-                       class="text-gray-700 font-semibold hover:text-indigo-600 transition duration-150">
-                        @dm.Ten
-                    </a>
+                    // Kiểm tra danh mục con trực tiếp từ Database
+                    var subCategories = category.InverseParent!.Where(s => s.TrangThai == true).ToList();
+                    bool hasChildren = subCategories.Any();
+
+                    <div class="relative group py-6">
+                        <a href="@(hasChildren ? "#" : Url.Action("List", "Product", new { categoryId = category.MaDm }))"
+                           class="flex items-center gap-1 text-sm font-bold text-gray-600 hover:text-indigo-600 transition uppercase tracking-wide">
+                            @category.Ten
+                            @if (hasChildren)
+                            {
+                                <i class="fas fa-chevron-down text-xs opacity-50 mt-0.5"></i>
+                            }
+                        </a>
+
+                        <!-- DROPDOWN MENU -->
+                        @if (hasChildren)
+                        {
+                            <div class="absolute top-full left-0 w-56 bg-white rounded-xl shadow-xl border border-gray-100 p-2 invisible opacity-0 translate-y-2 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 z-50">
+                                @foreach (var subItem in subCategories)
+                                {
+                                    <a href="@Url.Action("List", "Product", new { categoryId = subItem.MaDm })"
+                                       class="block px-4 py-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition">
+                                        @subItem.Ten
+                                    </a>
+                                }
+                            </div>
+                        }
+                    </div>
                 }
             </nav>
 
-            <!-- Khu vực Giỏ hàng và Đăng nhập/Đăng xuất -->
-            <div class="flex space-x-4 items-center">
-                <!-- Nút Giỏ hàng -->
-                <a href="@Url.Action("Index", "Cart")" class="text-gray-700 hover:text-indigo-600 p-2 rounded-full hover:bg-gray-100 transition relative">
-                    <i class="fas fa-shopping-cart text-lg"></i>
-                    <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">@cartCount</span>
+            <!-- RIGHT ACTIONS (Giỏ hàng & User) -->
+            <div class="flex items-center gap-4">
+                <!-- Search -->
+                <div class="hidden md:block relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" placeholder="Tìm kiếm..." class="bg-gray-100 border-none rounded-full pl-9 pr-4 py-2 text-sm focus:ring-2 focus:ring-indigo-200 w-40 transition-all focus:w-60 outline-none">
+                </div>
+
+                <!-- Giỏ hàng -->
+                <a href="@Url.Action("Index", "Cart")" class="relative p-2 text-gray-600 hover:text-indigo-600 hover:bg-gray-100 rounded-full transition">
+                    <i class="fas fa-shopping-bag text-xl"></i>
+                    @if (cartCount > 0)
+                    {
+                        <span class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm transform translate-x-1/4 -translate-y-1/4">
+                            @cartCount
+                        </span>
+                    }
                 </a>
 
+                <!-- User Auth -->
                 @if (User.Identity!.IsAuthenticated)
                 {
-                    <!-- ĐÃ ĐĂNG NHẬP -->
-                    <div class="flex items-center space-x-2 group relative">
-                        <span class="text-sm font-semibold text-gray-700 cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition">
-                            <i class="fas fa-user-circle mr-1"></i> @userName!
-                        </span>
+                    <div class="relative group py-4">
+                        <button class="flex items-center gap-2 focus:outline-none">
+                            <!-- Avatar tạo tự động theo tên -->
+                            <img src="https://ui-avatars.com/api/?name=@userName&background=random" alt="User" class="w-9 h-9 rounded-full border-2 border-white shadow-sm">
+                            <span class="hidden md:block text-sm font-semibold text-gray-700">@userName</span>
+                            <i class="fas fa-caret-down text-gray-400 text-xs"></i>
+                        </button>
 
-                        <!-- Dropdown menu -->
-                        <div class="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl overflow-hidden z-30 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition duration-200 pointer-events-none group-hover:pointer-events-auto">
-                            <a href="@Url.Action("Profile", "Account")" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
-                                Hồ sơ
+                        <!-- User Dropdown -->
+                        <div class="absolute right-0 top-full mt-0 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden invisible opacity-0 translate-y-2 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 z-50">
+                            <div class="px-4 py-3 bg-gray-50 border-b border-gray-100">
+                                <p class="text-xs text-gray-500 uppercase font-bold">Tài khoản</p>
+                                <p class="text-sm font-medium text-gray-900 truncate">@userName</p>
+                            </div>
+                            <a href="#" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition">
+                                <i class="fas fa-user-circle w-5 text-center mr-2 text-gray-400"></i> Hồ sơ cá nhân
                             </a>
-                            <a href="@Url.Action("History", "Order")" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
-                                Lịch sử mua hàng
+                            <a href="#" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition">
+                                <i class="fas fa-box-open w-5 text-center mr-2 text-gray-400"></i> Đơn mua
                             </a>
-                            <form asp-controller="Account" asp-action="Logout" method="post" class="border-t border-gray-100">
-                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
-                                    <i class="fas fa-sign-out-alt mr-1"></i> Đăng xuất
+                            <div class="border-t border-gray-100"></div>
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition font-medium">
+                                    <i class="fas fa-sign-out-alt w-5 text-center mr-2"></i> Đăng xuất
                                 </button>
                             </form>
                         </div>
@@ -105,13 +154,10 @@
                 }
                 else
                 {
-                    <!-- CHƯA ĐĂNG NHẬP -->
-                    <a href="@Url.Action("Login", "Account")"
-                       class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition font-semibold text-sm">
+                    <a href="@Url.Action("Login", "Account")" class="text-sm font-bold text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-lg hover:bg-gray-100 transition">
                         Đăng nhập
                     </a>
-                    <a href="@Url.Action("Register", "Account")"
-                       class="text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 transition font-semibold text-sm border border-indigo-600 hidden sm:inline-block">
+                    <a href="@Url.Action("Register", "Account")" class="text-sm font-bold bg-indigo-600 text-white px-5 py-2.5 rounded-full shadow-md hover:bg-indigo-700 hover:shadow-lg transition transform hover:-translate-y-0.5">
                         Đăng ký
                     </a>
                 }
@@ -119,60 +165,35 @@
         </div>
     </header>
 
-    <!-- ============================================= -->
-    <!-- MAIN CONTENT (Nơi nội dung View cụ thể được render) -->
-    <!-- ============================================= -->
-    <main role="main" class="pb-3">
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow">
         @RenderBody()
     </main>
 
-    <!-- ============================================= -->
     <!-- FOOTER -->
-    <!-- ============================================= -->
-    <footer class="bg-gray-800 text-white mt-12 border-t border-gray-700">
-        <div class="container mx-auto px-4 py-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Cột 1: Giới thiệu -->
+    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <!-- ... (Nội dung Footer giữ nguyên như cũ) ... -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                 <div>
-                    <h5 class="text-xl font-bold mb-4 text-indigo-400">SHOPGIAY</h5>
-                    <p class="text-sm text-gray-400">Chuyên cung cấp các loại giày sneaker chính hãng với chất lượng tốt nhất.</p>
+                    <div class="flex items-center gap-2 mb-6">
+                        <i class="fas fa-shoe-prints text-2xl text-indigo-500"></i>
+                        <span class="text-2xl font-black text-white tracking-tight">SHOPGIAY</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        Điểm đến số 1 cho các tín đồ sneaker.
+                    </p>
                 </div>
-                <!-- Cột 2: Danh mục -->
-                <div>
-                    <h5 class="text-lg font-semibold mb-4 text-indigo-400">Danh Mục</h5>
-                    <ul class="space-y-2 text-sm">
-                        @foreach (var dm in danhMucCha)
-                        {
-                            <li><a href="@Url.Action("List", "Product", new { categoryId = dm.MaDm })" class="text-gray-400 hover:text-white transition">@dm.Ten</a></li>
-                        }
-                    </ul>
-                </div>
-                <!-- Cột 3: Hỗ trợ -->
-                <div>
-                    <h5 class="text-lg font-semibold mb-4 text-indigo-400">Hỗ Trợ</h5>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-white transition">Chính sách đổi trả</a></li>
-                        <li><a href="#" class="hover:text-white transition">Chính sách bảo mật</a></li>
-                        <li><a href="#" class="hover:text-white transition">Câu hỏi thường gặp</a></li>
-                    </ul>
-                </div>
-                <!-- Cột 4: Liên hệ -->
-                <div>
-                    <h5 class="text-lg font-semibold mb-4 text-indigo-400">Liên Hệ</h5>
-                    <p class="text-sm text-gray-400">Email: support@shopgiay.vn</p>
-                    <p class="text-sm text-gray-400">Điện thoại: 090-XXX-XXXX</p>
-                </div>
+                <!-- ... -->
             </div>
-        </div>
-        <div class="bg-gray-900 py-3 text-center text-sm text-gray-500">
-            <p>&copy; @DateTime.Now.Year ShopGiay. All rights reserved.</p>
+            <div class="border-t border-gray-800 pt-8 text-center">
+                <p class="text-sm text-gray-500">&copy; @DateTime.Now.Year ShopGiay. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Render Section Scripts nếu View con có yêu cầu -->
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -14,7 +14,9 @@ CREATE TABLE DANHMUC (
     ParentID INT NULL,        -- NULL = danh mục cha, có giá trị = con
     ThuTu INT DEFAULT 0,      -- Thứ tự hiển thị trên menu
     TrangThai BIT DEFAULT 1,  -- 1 = hiển thị, 0 = ẩn
-    CONSTRAINT FK_DANHMUC_PARENT FOREIGN KEY (ParentID) REFERENCES DANHMUC(MaDM)
+    CONSTRAINT FK_DANHMUC_PARENT FOREIGN KEY (ParentID) REFERENCES DANHMUC(MaDM),
+	CONSTRAINT UQ_DANHMUC_Ten_Parent UNIQUE(Ten, ParentID)
+
 );
 GO
 

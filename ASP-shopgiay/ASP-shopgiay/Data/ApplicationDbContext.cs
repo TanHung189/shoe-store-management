@@ -50,11 +50,15 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<TrangthaiDonhang> TrangthaiDonhangs { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=ADMIN\\MAY10;Initial Catalog=ShopGiay;Integrated Security=True;TrustServerCertificate=True;");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BientheSanpham>(entity =>
         {
-            entity.HasKey(e => e.MaBienThe).HasName("PK__BIENTHE___3987CEF5AB9664BA");
+            entity.HasKey(e => e.MaBienThe).HasName("PK__BIENTHE___3987CEF5B9396783");
 
             entity.Property(e => e.SoLuong).HasDefaultValue(0);
 
@@ -71,12 +75,12 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Chucvu>(entity =>
         {
-            entity.HasKey(e => e.MaCv).HasName("PK__CHUCVU__27258E76CD0059B6");
+            entity.HasKey(e => e.MaCv).HasName("PK__CHUCVU__27258E76699B3539");
         });
 
         modelBuilder.Entity<Cthoadon>(entity =>
         {
-            entity.HasKey(e => e.MaCthd).HasName("PK__CTHOADON__1E4FA771101A140C");
+            entity.HasKey(e => e.MaCthd).HasName("PK__CTHOADON__1E4FA771EB9448F8");
 
             entity.Property(e => e.GiamGiaCt).HasDefaultValue(0m);
             entity.Property(e => e.ThanhTienGoc).HasComputedColumnSql("([SoLuong]*[DonGia])", true);
@@ -90,7 +94,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Danhgium>(entity =>
         {
-            entity.HasKey(e => e.MaDanhGia).HasName("PK__DANHGIA__AA9515BF573C1049");
+            entity.HasKey(e => e.MaDanhGia).HasName("PK__DANHGIA__AA9515BFD433BC61");
 
             entity.Property(e => e.DaDuyet).HasDefaultValue(false);
             entity.Property(e => e.NgayDanhGia).HasDefaultValueSql("(getdate())");
@@ -106,7 +110,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Danhmuc>(entity =>
         {
-            entity.HasKey(e => e.MaDm).HasName("PK__DANHMUC__2725866E403B0E64");
+            entity.HasKey(e => e.MaDm).HasName("PK__DANHMUC__2725866E6FFE09C4");
 
             entity.Property(e => e.ThuTu).HasDefaultValue(0);
             entity.Property(e => e.TrangThai).HasDefaultValue(true);
@@ -116,7 +120,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<DanhsachYeuThich>(entity =>
         {
-            entity.HasKey(e => e.MaYeuThich).HasName("PK__DANHSACH__B9007E4C9DEC7833");
+            entity.HasKey(e => e.MaYeuThich).HasName("PK__DANHSACH__B9007E4C56972CB6");
 
             entity.Property(e => e.NgayThem).HasDefaultValueSql("(getdate())");
 
@@ -129,7 +133,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Diachi>(entity =>
         {
-            entity.HasKey(e => e.MaDc).HasName("PK__DIACHI__272586644A14F322");
+            entity.HasKey(e => e.MaDc).HasName("PK__DIACHI__27258664B5943362");
 
             entity.Property(e => e.MacDinh).HasDefaultValue(false);
 
@@ -138,7 +142,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Giohang>(entity =>
         {
-            entity.HasKey(e => e.MaGioHang).HasName("PK__GIOHANG__F5001DA328098048");
+            entity.HasKey(e => e.MaGioHang).HasName("PK__GIOHANG__F5001DA30A1A339B");
 
             entity.Property(e => e.NgayThem).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.SoLuong).HasDefaultValue(1);
@@ -152,7 +156,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Hoadon>(entity =>
         {
-            entity.HasKey(e => e.MaHd).HasName("PK__HOADON__2725A6E0A18414E8");
+            entity.HasKey(e => e.MaHd).HasName("PK__HOADON__2725A6E011673B1F");
 
             entity.Property(e => e.GiamGia).HasDefaultValue(0m);
             entity.Property(e => e.Ngay).HasDefaultValueSql("(getdate())");
@@ -177,12 +181,12 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Kichthuoc>(entity =>
         {
-            entity.HasKey(e => e.MaKichThuoc).HasName("PK__KICHTHUO__22BFD664FAABF843");
+            entity.HasKey(e => e.MaKichThuoc).HasName("PK__KICHTHUO__22BFD66471A2527E");
         });
 
         modelBuilder.Entity<Magiamgium>(entity =>
         {
-            entity.HasKey(e => e.MaGiamGia).HasName("PK__MAGIAMGI__EF9458E4751E9CD6");
+            entity.HasKey(e => e.MaGiamGia).HasName("PK__MAGIAMGI__EF9458E40BACB660");
 
             entity.Property(e => e.NgayBatDau).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.PhanTramGiam).HasDefaultValue(0.0);
@@ -192,19 +196,19 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Mausac>(entity =>
         {
-            entity.HasKey(e => e.MaMau).HasName("PK__MAUSAC__3A5BBB7DA4881D79");
+            entity.HasKey(e => e.MaMau).HasName("PK__MAUSAC__3A5BBB7D7780E09E");
         });
 
         modelBuilder.Entity<Phuongthucthanhtoan>(entity =>
         {
-            entity.HasKey(e => e.MaPt).HasName("PK__PHUONGTH__2725E7F6F19C81DA");
+            entity.HasKey(e => e.MaPt).HasName("PK__PHUONGTH__2725E7F690ADFFF7");
 
             entity.Property(e => e.TrangThai).HasDefaultValue(true);
         });
 
         modelBuilder.Entity<Sanpham>(entity =>
         {
-            entity.HasKey(e => e.MaSp).HasName("PK__SANPHAM__2725081C7D90003C");
+            entity.HasKey(e => e.MaSp).HasName("PK__SANPHAM__2725081C6FB5A1F9");
 
             entity.Property(e => e.LuotMua).HasDefaultValue(0);
             entity.Property(e => e.LuotXem).HasDefaultValue(0);
@@ -218,23 +222,9 @@ public partial class ApplicationDbContext : DbContext
                 .HasConstraintName("FK_SP_TH");
         });
 
-        // Khi xóa 1 Sanpham -> Tự động xóa tất cả BienTheSP liên quan
-        modelBuilder.Entity<BientheSanpham>()
-        .HasOne(b => b.MaSpNavigation)
-        .WithMany(s => s.BientheSanphams)
-        .HasForeignKey(b => b.MaSp)
-        .OnDelete(DeleteBehavior.Cascade);
-
-        // Khi xóa 1 Sanpham -> Tự động xóa tất cả Danhgia liên quan
-        modelBuilder.Entity<Danhgium>()
-            .HasOne(d => d.MaSpNavigation)
-            .WithMany(s => s.Danhgia)
-            .HasForeignKey(d => d.MaSp)
-            .OnDelete(DeleteBehavior.Cascade);
-
         modelBuilder.Entity<Taikhoan>(entity =>
         {
-            entity.HasKey(e => e.MaTk).HasName("PK__TAIKHOAN__2725007084A76901");
+            entity.HasKey(e => e.MaTk).HasName("PK__TAIKHOAN__2725007085695207");
 
             entity.Property(e => e.TrangThai).HasDefaultValue(true);
 
@@ -243,12 +233,12 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Thuonghieu>(entity =>
         {
-            entity.HasKey(e => e.MaTh).HasName("PK__THUONGHI__27250075FB66A837");
+            entity.HasKey(e => e.MaTh).HasName("PK__THUONGHI__272500753C0B0092");
         });
 
         modelBuilder.Entity<TrangthaiDonhang>(entity =>
         {
-            entity.HasKey(e => e.MaTrangThai).HasName("PK__TRANGTHA__AADE41385F468680");
+            entity.HasKey(e => e.MaTrangThai).HasName("PK__TRANGTHA__AADE41381286BAD0");
         });
 
         OnModelCreatingPartial(modelBuilder);

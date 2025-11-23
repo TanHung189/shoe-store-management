@@ -2,179 +2,160 @@
 
 @{
     ViewData["Title"] = "Danh Sách Sản Phẩm";
-    Layout = null; // Tạm thời bỏ Layout để xem full trang
+    Layout = "_Layout";
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Shop Giày Sneaker</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f7f9;
-        }
+<div class="bg-gray-50 min-h-screen py-10">
+    <div class="container mx-auto px-4">
 
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
+        ```
+        <!-- Breadcrumb & Tiêu đề -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10">
+            <div class="mb-4 md:mb-0">
+                <a href="/" class="text-gray-500 hover:text-indigo-600 text-sm font-medium mb-1 inline-block">&larr; Trở về Trang Chủ</a>
+                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Cửa Hàng</h1>
+            </div>
 
-        @@media (min-width: 768px) {
-            .product-grid {
-                grid-template-columns: repeat(3, 1fr);
+            <!-- Nút Xóa bộ lọc -->
+            @if (Model.CurrentCategoryId != null || Model.CurrentBrandId != null)
+            {
+                <a href="@Url.Action("List", "Product")" class="flex items-center gap-2 bg-red-100 text-red-600 px-4 py-2 rounded-full text-sm font-bold hover:bg-red-200 transition shadow-sm">
+                    <i class="fas fa-times"></i> Xóa bộ lọc
+                </a>
             }
-        }
-
-        @@media (min-width: 1024px) {
-            .product-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-    </style>
-</head>
-<body>
-    <header class="bg-white shadow-md">
-        <div class="container mx-auto px-4 py-4">
-            <a href="/" class="text-xl font-black text-indigo-700 hover:text-indigo-900 transition">&larr; Trở về Trang Chủ</a>
         </div>
-    </header>
-
-    <main class="container mx-auto px-4 py-8">
-        <h1 class="text-4xl font-extrabold text-gray-800 mb-8">Danh Sách Sản Phẩm</h1>
 
         <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Sidebar Bộ lọc (Filters) -->
-            <aside class="lg:w-1/4 bg-white p-6 rounded-xl shadow-lg h-full lg:sticky top-20">
-                <h3 class="text-xl font-bold text-gray-800 mb-5 border-b pb-3">Bộ Lọc Sản Phẩm</h3>
 
-                <!-- Lọc theo Danh mục -->
-                <div class="mb-6">
-                    <h4 class="font-semibold text-lg mb-3 text-indigo-600">Danh Mục</h4>
-                    <ul>
-                        <li>
-                            <a href="@Url.Action("List", "Product")"
-                               class="block py-1 text-gray-600 hover:text-indigo-500 @(Model.CurrentCategoryId == null ? "font-bold text-indigo-700" : "")">
-                                Tất cả (@Model.Products.Count)
-                            </a>
-                        </li>
-                        @foreach (var dm in Model.AllCategories.Where(c => c.ParentId == null))
-                        {
-                            <li class="mt-2">
-                                <a href="@Url.Action("List", "Product", new { categoryId = dm.MaDm, brandId = Model.CurrentBrandId })"
-                                   class="block font-semibold text-gray-700 hover:text-indigo-600 @(Model.CurrentCategoryId == dm.MaDm ? "text-indigo-700" : "")">
-                                    @dm.Ten
-                                </a>
-                                @* Hiển thị danh mục con *@
-                                @if (Model.AllCategories.Any(c => c.ParentId == dm.MaDm))
-                                {
-                                    <ul class="ml-4 border-l pl-3 border-gray-200 mt-1">
-                                        @foreach (var dmCon in Model.AllCategories.Where(c => c.ParentId == dm.MaDm))
-                                        {
-                                            <li>
-                                                <a href="@Url.Action("List", "Product", new { categoryId = dmCon.MaDm, brandId = Model.CurrentBrandId })"
-                                                   class="block text-sm text-gray-500 hover:text-indigo-600 @(Model.CurrentCategoryId == dmCon.MaDm ? "font-semibold text-indigo-700" : "")">
-                                                    - @dmCon.Ten
-                                                </a>
-                                            </li>
-                                        }
-                                    </ul>
-                                }
-                            </li>
-                        }
-                    </ul>
-                </div>
+            <!-- SIDEBAR BỘ LỌC -->
+            <aside class="lg:w-1/4">
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 sticky top-24">
+                    <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2 border-b pb-4">
+                        <i class="fas fa-filter text-indigo-600"></i> Bộ Lọc
+                    </h3>
 
-                <!-- Lọc theo Thương hiệu -->
-                <div class="mb-6">
-                    <h4 class="font-semibold text-lg mb-3 text-indigo-600">Thương Hiệu</h4>
-                    <ul>
-                        @foreach (var th in Model.AllBrands)
-                        {
+                    <!-- Danh mục -->
+                    <div class="mb-8">
+                        <h4 class="font-bold text-sm text-gray-500 uppercase tracking-wider mb-4">Danh Mục</h4>
+                        <ul class="space-y-2">
                             <li>
-                                <a href="@Url.Action("List", "Product", new { brandId = th.MaTh, categoryId = Model.CurrentCategoryId })"
-                                   class="block py-1 text-gray-600 hover:text-indigo-500 @(Model.CurrentBrandId == th.MaTh ? "font-bold text-indigo-700" : "")">
-                                    @th.TenTh
+                                <a href="@Url.Action("List", "Product", new { brandId = Model.CurrentBrandId })"
+                                   class="flex justify-between items-center group px-3 py-2 rounded-lg transition @(Model.CurrentCategoryId == null ? "bg-indigo-50 text-indigo-700 font-bold" : "text-gray-600 hover:bg-gray-50")">
+                                    <span>Tất cả</span>
                                 </a>
                             </li>
-                        }
-                    </ul>
-                </div>
 
+                            @foreach (var dm in Model.AllCategories.Where(c => c.ParentId == null))
+                            {
+                                <li>
+                                    <a href="@Url.Action("List", "Product", new { categoryId = dm.MaDm })"
+                                       class="flex justify-between items-center px-3 py-2 rounded-lg transition @(Model.CurrentCategoryId == dm.MaDm ? "bg-indigo-50 text-indigo-700 font-bold" : "text-gray-700 font-semibold hover:bg-gray-50")">
+                                        <span>@dm.Ten</span>
+                                        @if (Model.CurrentCategoryId == dm.MaDm)
+                                        {
+                                            <i class="fas fa-check text-xs text-indigo-600"></i>
+                                        }
+                                    </a>
+
+                                    @if (Model.AllCategories.Any(c => c.ParentId == dm.MaDm))
+                                    {
+                                        <ul class="mt-1 ml-3 border-l-2 border-gray-100 pl-2 space-y-1">
+                                            @foreach (var dmCon in Model.AllCategories.Where(c => c.ParentId == dm.MaDm))
+                                            {
+                                                <li>
+                                                    <a href="@Url.Action("List", "Product", new { categoryId = dmCon.MaDm })"
+                                                       class="block px-3 py-1.5 text-sm rounded-md transition @(Model.CurrentCategoryId == dmCon.MaDm ? "text-indigo-600 font-bold bg-indigo-50" : "text-gray-500 hover:text-indigo-600 hover:bg-gray-50")">
+                                                        @dmCon.Ten
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <!-- Thương hiệu -->
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-500 uppercase tracking-wider mb-4">Thương Hiệu</h4>
+                        <ul class="space-y-2">
+                            @foreach (var th in Model.AllBrands)
+                            {
+                                <li>
+                                    <a href="@Url.Action("List", "Product", new { brandId = th.MaTh, categoryId = Model.CurrentCategoryId })"
+                                       class="flex items-center justify-between px-3 py-2 rounded-lg transition @(Model.CurrentBrandId == th.MaTh ? "bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 shadow-sm" : "text-gray-600 hover:bg-gray-50 border border-transparent")">
+                                        <span>@th.TenTh</span>
+                                        @if (Model.CurrentBrandId == th.MaTh)
+                                        {
+                                            <i class="fas fa-check text-xs text-indigo-600"></i>
+                                        }
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
             </aside>
 
-            <!-- Nội dung Sản phẩm (Product Grid) -->
+            <!-- PRODUCT GRID -->
             <section class="lg:w-3/4">
-                <div class="product-grid">
-                    @if (Model.Products.Any())
-                    {
+                @if (Model.Products.Any())
+                {
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
                         @foreach (var product in Model.Products)
                         {
-                            @* Sử dụng Partial View để render thẻ sản phẩm *@
                             <partial name="_ProductCard" model="product" />
                         }
-                    }
-                    else
+                    </div>
+
+                    <!-- Pagination -->
+                    @if (Model.TotalPages > 1)
                     {
-                        <div class="col-span-full bg-white p-10 rounded-xl shadow-lg text-center text-gray-500">
-                            Không tìm thấy sản phẩm nào phù hợp với bộ lọc.
+                        <div class="flex justify-center mt-10 gap-2">
+                            @{
+                                string GetUrl(int p) => Url.Action("List", "Product", new { categoryId = Model.CurrentCategoryId, brandId = Model.CurrentBrandId, page = p });
+                            }
+
+                            @if (Model.CurrentPage > 1)
+                            {
+                                <a href="@GetUrl(Model.CurrentPage - 1)" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-indigo-50 hover:border-indigo-500 hover:text-indigo-600 transition">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            }
+
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <a href="@GetUrl(i)" class="w-10 h-10 flex items-center justify-center rounded-lg font-bold transition @(i == Model.CurrentPage ? "bg-indigo-600 text-white shadow-md" : "border border-gray-300 text-gray-600 hover:bg-indigo-50")">
+                                    @i
+                                </a>
+                            }
+
+                            @if (Model.CurrentPage < Model.TotalPages)
+                            {
+                                <a href="@GetUrl(Model.CurrentPage + 1)" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-indigo-50 hover:border-indigo-500 hover:text-indigo-600 transition">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            }
                         </div>
                     }
-                </div>
-
-                <!-- Phân trang (Pagination) -->
-                @if (Model.TotalPages > 1)
+                }
+                else
                 {
-                    <div class="flex justify-center items-center space-x-2 mt-8">
-                        @{
-                            // Hàm helper đơn giản để giữ lại các tham số truy vấn hiện tại
-                            string GetPaginationUrl(int pageNum)
-                            {
-                                var routeValues = new RouteValueDictionary {
-                                        { "categoryId", Model.CurrentCategoryId },
-                                        { "brandId", Model.CurrentBrandId },
-                                        { "page", pageNum }
-                                        };
-                                return Url.Action("List", "Product", routeValues) ?? "#";
-                            }
-                        }
-
-                        <!-- Nút Previous -->
-                        <a href="@(Model.CurrentPage > 1 ? GetPaginationUrl(Model.CurrentPage - 1) : "#")"
-                           class="px-3 py-2 rounded-lg @(Model.CurrentPage > 1 ? "bg-indigo-500 text-white hover:bg-indigo-600" : "bg-gray-300 text-gray-500 cursor-not-allowed")">
-                            &laquo; Trước
-                        </a>
-
-                        <!-- Các trang -->
-                        @for (int i = 1; i <= Model.TotalPages; i++)
-                        {
-                            <a href="@GetPaginationUrl(i)"
-                               class="px-3 py-2 rounded-lg font-semibold @(i == Model.CurrentPage ? "bg-indigo-700 text-white shadow-lg" : "bg-white text-indigo-600 hover:bg-indigo-100")">
-                                @i
-                            </a>
-                        }
-
-                        <!-- Nút Next -->
-                        <a href="@(Model.CurrentPage<Model.TotalPages? GetPaginationUrl(Model.CurrentPage + 1) : "#")"
-                           class="px-3 py-2 rounded-lg @(Model.CurrentPage < Model.TotalPages ? "bg-indigo-500 text-white hover:bg-indigo-600" : "bg-gray-300 text-gray-500 cursor-not-allowed")">
-                            Tiếp &raquo;
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
+                        <div class="w-28 h-28 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-search text-5xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">Không tìm thấy sản phẩm!</h3>
+                        <p class="text-gray-500 mb-6">Rất tiếc, không có sản phẩm nào phù hợp với tiêu chí lọc của bạn.</p>
+                        <a href="@Url.Action("List", "Product")" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            Xem tất cả sản phẩm
                         </a>
                     </div>
                 }
             </section>
         </div>
-    </main>
+    </div>
+    ```
 
-    <footer class="bg-gray-800 text-white mt-12">
-        <div class="container mx-auto px-4 py-8 text-center">
-            <p>&copy; @DateTime.Now.Year ShopGiay. All rights reserved.</p>
-        </div>
-    </footer>
-</body>
-</html>
+</div>
